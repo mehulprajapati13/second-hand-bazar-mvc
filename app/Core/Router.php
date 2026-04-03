@@ -110,7 +110,6 @@ class Router
             BrowseController::class =>
                 new BrowseController($browseService, $requestService),
 
-            // Fixed order: RequestController expects (RequestService, BrowseService)
             RequestController::class =>
                 new RequestController($requestService, $browseService),
 

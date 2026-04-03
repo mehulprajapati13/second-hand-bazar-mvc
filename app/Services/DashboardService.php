@@ -47,20 +47,28 @@ class DashboardService
 
     private function countRequestsReceived(int $userId): int
     {
-        $stmt = $this->conn->prepare(
-            "SELECT COUNT(*) as total FROM requests WHERE owner_id = ? AND status = 'pending' ");
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $row = $stmt->get_result()->fetch_assoc();
-        return (int) $row['total'];
+        try {
+            $stmt = $this->conn->prepare(
+                "SELECT COUNT(*) as total FROM requests WHERE owner_id = ? AND status = 'pending' ");
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            return (int)($row['total'] ?? 0);
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 
     private function countRequestsSent(int $userId): int
     {
-        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM requests WHERE requester_id = ?");
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $row = $stmt->get_result()->fetch_assoc();
-        return (int) $row['total'];
+        try {
+            $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM requests WHERE requester_id = ?");
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
+            return (int)($row['total'] ?? 0);
+        } catch (\Throwable $e) {
+            return 0;
+        }
     }
 }

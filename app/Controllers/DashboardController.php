@@ -37,8 +37,13 @@ class DashboardController extends Controller
         $userId = $_SESSION['user']['id'];
         $tab    = $_GET['tab'] ?? 'received';
 
-        $incomingRequests = $this->requestService->getReceivedRequests($userId);
-        $outgoingRequests = $this->requestService->getSentRequests($userId);
+        try {
+            $incomingRequests = $this->requestService->getReceivedRequests($userId);
+            $outgoingRequests = $this->requestService->getSentRequests($userId);
+        } catch (\Throwable $e) {
+            $incomingRequests = [];
+            $outgoingRequests = [];
+        }
 
         $this->view('dashboard/requests', [
             'incomingRequests' => $incomingRequests,

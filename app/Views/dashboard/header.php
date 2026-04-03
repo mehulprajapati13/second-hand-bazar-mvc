@@ -83,15 +83,15 @@ $userInitial = strtoupper(substr($userName, 0, 1));
         <!-- Nav -->
         <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">Menu</p>
-            <?php foreach ($sidebarItems as $item):
-                $isActive = str_starts_with($currentPath, $item['match']);
+            <?php foreach ($sidebarItems as $navItem):
+                $isActive = str_starts_with($currentPath, $navItem['match']);
                 $cls = $isActive ? 'sidebar-link active font-semibold text-brand-600' : 'sidebar-link text-gray-600';
             ?>
-            <a href="<?= $item['href'] ?>" class="<?= $cls ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm">
+            <a href="<?= $navItem['href'] ?>" class="<?= $cls ?> flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm">
                 <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <?= $item['icon'] ?>
+                    <?= $navItem['icon'] ?>
                 </svg>
-                <?= htmlspecialchars($item['label']) ?>
+                <?= htmlspecialchars($navItem['label']) ?>
             </a>
             <?php endforeach; ?>
         </nav>
@@ -173,13 +173,13 @@ $userInitial = strtoupper(substr($userName, 0, 1));
 
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden lg:hidden bg-white border-b border-gray-200 px-4 py-3 space-y-1">
-            <?php foreach ($sidebarItems as $item):
-                $isActive = str_starts_with($currentPath, $item['match']);
+            <?php foreach ($sidebarItems as $navItem):
+                $isActive = str_starts_with($currentPath, $navItem['match']);
                 $cls = $isActive ? 'bg-brand-50 text-brand-600 font-semibold' : 'text-gray-600 hover:bg-gray-50';
             ?>
-            <a href="<?= $item['href'] ?>" class="<?= $cls ?> flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors">
-                <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><?= $item['icon'] ?></svg>
-                <?= htmlspecialchars($item['label']) ?>
+            <a href="<?= $navItem['href'] ?>" class="<?= $cls ?> flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors">
+                <svg class="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><?= $navItem['icon'] ?></svg>
+                <?= htmlspecialchars($navItem['label']) ?>
             </a>
             <?php endforeach; ?>
             <div class="pt-2 border-t border-gray-100 flex gap-2">

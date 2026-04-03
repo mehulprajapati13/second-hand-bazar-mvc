@@ -1,5 +1,18 @@
 <?php require __DIR__ . '/../dashboard/header.php'; ?>
 
+<?php
+$itemId = (int)($item['id'] ?? 0);
+$title = (string)($item['title'] ?? 'Untitled item');
+$image = $item['image'] ?? null;
+$status = strtolower((string)($item['status'] ?? 'active'));
+$mode = strtolower((string)($item['mode'] ?? 'sell'));
+$price = (float)($item['price'] ?? 0);
+$city = (string)($item['city'] ?? 'Unknown');
+$sellerName = (string)($item['seller_name'] ?? 'Seller');
+$description = (string)($item['description'] ?? 'No description provided.');
+$listedOn = !empty($item['created_at']) ? date('d M Y', strtotime($item['created_at'])) : 'N/A';
+?>
+
 <main class="px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
     <!-- Breadcrumb -->
@@ -8,31 +21,17 @@
         <span>/</span>
         <a href="/browse" class="hover:text-brand-500">Browse</a>
         <span>/</span>
-        <span class="text-gray-700 font-medium truncate max-w-[150px]"><?= htmlspecialchars($item['title']) ?></span>
+        <span class="text-gray-700 font-medium truncate max-w-[150px]"><?= htmlspecialchars($title) ?></span>
     </div>
-
-    <!-- Success / Error Messages -->
-    <?php if (isset($_GET['success']) && $_GET['success'] === 'request_sent'): ?>
-        <div class="bg-green-50 border border-green-200 rounded-xl p-4">
-            <p class="text-green-700 text-sm font-semibold">✓ Request sent successfully! Wait for the owner to respond.</p>
-        </div>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['error'])): ?>
-        <?php $errMap = ['already_sent' => 'You already sent a request for this item.', 'unavailable' => 'This item is no longer available.']; ?>
-        <div class="bg-red-50 border border-red-200 rounded-xl p-4">
-            <p class="text-red-700 text-sm font-semibold"><?= htmlspecialchars($errMap[$_GET['error']] ?? 'Something went wrong.') ?></p>
-        </div>
-    <?php endif; ?>
 
     <!-- Product Detail Card -->
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div class="grid grid-cols-1 lg:grid-cols-2">
             <!-- Image -->
             <div class="bg-gray-100 flex items-center justify-center min-h-[320px] lg:min-h-[420px] overflow-hidden">
-                <?php if (!empty($item['image'])): ?>
-                <img src="/uploads/items/<?= htmlspecialchars($item['image']) ?>"
-                     alt="<?= htmlspecialchars($item['title']) ?>"
+                 <?php if (!empty($image)): ?>
+                 <img src="/uploads/items/<?= htmlspecialchars((string)$image) ?>"
+                     alt="<?= htmlspecialchars($title) ?>"
                      class="w-full h-full object-cover" />
                 <?php else: ?>
                 <div class="flex flex-col items-center justify-center text-gray-300 gap-3 p-16">
@@ -48,24 +47,24 @@
                 <div class="flex items-center gap-2 flex-wrap">
                     <?php
                     $statusClr = ['active'=>'bg-green-100 text-green-700','sold'=>'bg-gray-100 text-gray-600','reserved'=>'bg-yellow-100 text-yellow-700','returned'=>'bg-blue-100 text-blue-700'];
-                    $sc = $statusClr[strtolower($item['status'] ?? '')] ?? 'bg-gray-100 text-gray-600';
+                    $sc = $statusClr[$status] ?? 'bg-gray-100 text-gray-600';
                     ?>
                     <span class="text-xs font-bold px-3 py-1 rounded-full <?= $sc ?>">
-                        <?= ucfirst($item['status'] ?? 'active') ?>
+                        <?= ucfirst($status) ?>
                     </span>
-                    <span class="text-xs font-semibold px-3 py-1 rounded-full <?= ($item['mode']==='rent')?'bg-blue-100 text-blue-700':'bg-emerald-100 text-emerald-700' ?>">
-                        For <?= ucfirst($item['mode'] ?? 'Sale') ?>
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full <?= ($mode === 'rent') ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700' ?>">
+                        For <?= ucfirst($mode) ?>
                     </span>
                 </div>
 
                 <!-- Title & Price -->
                 <div>
                     <h1 class="text-xl sm:text-2xl font-bold text-gray-900 leading-snug">
-                        <?= htmlspecialchars($item['title']) ?>
+                        <?= htmlspecialchars($title) ?>
                     </h1>
                     <p class="text-3xl font-bold text-gray-900 mt-3">
-                        ₹<?= number_format((float)$item['price'], 0) ?>
-                        <?php if ($item['mode'] === 'rent'): ?>
+                        ₹<?= number_format($price, 0) ?>
+                        <?php if ($mode === 'rent'): ?>
                             <span class="text-sm font-normal text-gray-400">/ day</span>
                         <?php endif; ?>
                     </p>
@@ -75,15 +74,15 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-gray-50 rounded-xl p-3">
                         <p class="text-xs text-gray-400">Location</p>
-                        <p class="text-sm font-semibold text-gray-800 mt-0.5"><?= htmlspecialchars($item['city']) ?></p>
+                        <p class="text-sm font-semibold text-gray-800 mt-0.5"><?= htmlspecialchars($city) ?></p>
                     </div>
                     <div class="bg-gray-50 rounded-xl p-3">
                         <p class="text-xs text-gray-400">Seller</p>
-                        <p class="text-sm font-semibold text-gray-800 mt-0.5"><?= htmlspecialchars($item['seller_name']) ?></p>
+                        <p class="text-sm font-semibold text-gray-800 mt-0.5"><?= htmlspecialchars($sellerName) ?></p>
                     </div>
                     <div class="bg-gray-50 rounded-xl p-3 col-span-2">
                         <p class="text-xs text-gray-400">Listed on</p>
-                        <p class="text-sm font-semibold text-gray-800 mt-0.5"><?= date('d M Y', strtotime($item['created_at'])) ?></p>
+                        <p class="text-sm font-semibold text-gray-800 mt-0.5"><?= htmlspecialchars($listedOn) ?></p>
                     </div>
                 </div>
 
@@ -91,24 +90,18 @@
                 <div class="bg-gray-50 rounded-xl p-4">
                     <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Description</p>
                     <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
-                        <?= htmlspecialchars($item['description']) ?>
+                        <?= htmlspecialchars($description) ?>
                     </p>
                 </div>
 
                 <!-- Action Area -->
                 <div class="pt-1">
-                    <?php
-                    $isOwner   = isset($similarItems) ? false : false; // set below
-                    $userId    = $_SESSION['user']['id'];
-                    $isOwner   = (int)$item['user_id'] === (int)$userId;
-                    $isActive  = strtolower($item['status'] ?? '') === 'active';
-                    ?>
-
+                    <?php $isActive = $status === 'active'; ?>
                     <?php if ($isOwner): ?>
                         <!-- Owner sees edit link -->
                         <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
                             <p class="text-blue-700 text-sm font-medium mb-2">This is your listing.</p>
-                            <a href="/items/edit/<?= $item['id'] ?>"
+                            <a href="/items/edit/<?= $itemId ?>"
                                class="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-5 py-2 rounded-lg transition-colors">
                                 Edit Item
                             </a>
@@ -120,29 +113,15 @@
                             <p class="text-gray-500 text-sm">This item is no longer available.</p>
                         </div>
 
-                    <?php elseif (!empty($alreadySent)): ?>
-                        <!-- Already sent request -->
-                        <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-                            <p class="text-green-700 text-sm font-semibold mb-1">✓ Request already sent.</p>
-                            <p class="text-green-600 text-xs mb-3">Waiting for the owner to respond.</p>
-                            <a href="/requests?tab=sent" class="text-brand-500 hover:text-brand-700 text-sm font-semibold">
-                                View my requests →
-                            </a>
-                        </div>
-
                     <?php else: ?>
-                        <!-- Send Request Form -->
-                        <form action="/requests/send" method="POST">
-                            <input type="hidden" name="item_id"  value="<?= $item['id'] ?>"/>
-                            <input type="hidden" name="owner_id" value="<?= $item['user_id'] ?>"/>
-                            <button type="submit"
-                                    class="w-full inline-flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold px-5 py-3 rounded-xl text-sm transition-colors shadow-sm">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                </svg>
-                                Send <?= $item['mode'] === 'rent' ? 'Rent' : 'Buy' ?> Request
-                            </button>
-                        </form>
+                        <!-- Request module coming soon -->
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center">
+                            <p class="text-orange-700 text-sm font-semibold mb-1">Interested in this item?</p>
+                            <p class="text-orange-600 text-xs">
+                                Contact the seller directly:<br>
+                                <strong><?= htmlspecialchars($sellerName) ?></strong>
+                            </p>
+                        </div>
                     <?php endif; ?>
 
                     <a href="/browse" class="mt-3 flex items-center justify-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors">

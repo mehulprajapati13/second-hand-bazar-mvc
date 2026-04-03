@@ -44,14 +44,12 @@ class BrowseController extends Controller
             exit;
         }
 
-        $alreadySent = $this->requestService->AlreadySentRequest($itemId, $userId);
-
-        $isOwner = $item['user_id'] === $userId;
+        $isOwner = (int)$item['user_id'] === (int)$userId;
 
         $this->view('browse/detail', [
-            'item' => $item,
-            'alreadySent' => $alreadySent,
-            'isOwner' => $isOwner,
+            'item'        => $item,
+            'alreadySent' => false,
+            'isOwner'     => $isOwner,
         ]);
     }
 }

@@ -50,12 +50,17 @@ class ItemService
             return false;
         }
 
-        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM requests WHERE item_id = ? AND status IN ('pending', 'approved')");
-        $stmt->bind_param("i", $itemId);
-        $stmt->execute();
-        $row = $stmt->get_result()->fetch_assoc();
+        // Request module is optional right now; allow editing when request data is unavailable.
+        try {
+            $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM requests WHERE item_id = ? AND status IN ('pending', 'approved')");
+            $stmt->bind_param("i", $itemId);
+            $stmt->execute();
+            $row = $stmt->get_result()->fetch_assoc();
 
-        return (int)$row['total'] === 0;
+            return (int)($row['total'] ?? 0) === 0;
+        } catch (\Throwable $e) {
+            return true;
+        }
     }
 
     public function updateItem(int $itemId, string $title, string $description, float  $price, string $mode, string $city, ?string $image): bool

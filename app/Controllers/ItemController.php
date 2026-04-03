@@ -125,14 +125,14 @@ class ItemController extends Controller
 
         $similarItems = $this->itemService->getSimilarItems($item['mode'], $itemId);
 
-        // Check if user already sent a request for this item
-        $requestService = new \Vendor\App\Services\RequestService();
-        $alreadySent    = $requestService->AlreadySentRequest($itemId, $userId);
+        // isOwner — true if logged-in user owns this item
+        $isOwner = (int)$item['user_id'] === (int)$userId;
 
         $this->view('items/details', [
             'item'         => $item,
             'similarItems' => $similarItems,
-            'alreadySent'  => $alreadySent,
+            'isOwner'      => $isOwner,
+            'alreadySent'  => false,
         ]);
     }
 
@@ -143,7 +143,7 @@ class ItemController extends Controller
 
         $item = $this->itemService->getItemById($itemId);
 
-        if (!$item || $item['user_id'] !== $userId) {
+        if (!$item || (int)$item['user_id'] !== (int)$userId) {
             header("Location: /items");
             exit;
         }
@@ -171,7 +171,7 @@ class ItemController extends Controller
 
         $item = $this->itemService->getItemById($itemId);
 
-        if (!$item || $item['user_id'] !== $userId) {
+        if (!$item || (int)$item['user_id'] !== (int)$userId) {
             header("Location: /items");
             exit;
         }
