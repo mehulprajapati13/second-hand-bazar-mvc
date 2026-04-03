@@ -1,0 +1,91 @@
+# Environment files (CONFIDENTIAL - contains secrets, API keys, DB credentials)
+.env
+.env.local
+.env.*.local
+.env.backup
+.env.production
+
+# Vendor dependencies (auto-generated)
+/vendor/
+
+# Composer lock (optional - some teams include it)
+# composer.lock
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Log files (may contain sensitive data)
+/storage/logs/*.log
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache files
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+
+# Compiled files
+*.compiled.php
+
+# Debug files
+/storage/debugbar/
+
+# Node modules (if using frontend build tools)
+/node_modules/
+
+# Build output
+/public/build/
+/public/hot
+/public/storage
+/public/mix-manifest.json
+
+# PHPUnit
+.phpunit.result.cache
+phpunit.xml
+
+# Auth/security related
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+*.ppk
+
+# Database files (CONFIDENTIAL)
+*.sql
+*.sqlite
+*.db
+database/*.sqlite
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Credentials and secrets
+credentials.json
+secrets.json
+config.local.php
+auth.json

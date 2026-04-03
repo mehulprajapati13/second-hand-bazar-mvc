@@ -1,0 +1,21 @@
+{
+    "name": "vendor/second-hand-bazaar",
+    "description": "Second Hand Bazaar Marketplace",
+    "autoload": {
+        "psr-4": {
+            "Vendor\\App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mehul",
+            "email": "mehul@krishaweb.com"
+        }
+    ],
+    "require": {
+        "phpmailer/phpmailer": "^6.9",
+        "vlucas/phpdotenv": "^5.6",
+        "monolog/monolog": "^3.10",
+        "blakvghost/php-validator": "^2.3"
+    }
+}
