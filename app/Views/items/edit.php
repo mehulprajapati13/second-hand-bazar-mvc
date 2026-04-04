@@ -1,126 +1,117 @@
-<?php require __DIR__ . '/../dashboard/header.php'; ?>
-
 <?php
-$itemId = (int)($item['id'] ?? 0);
-$title = (string)($item['title'] ?? '');
+$pageTitle = 'Edit Listing';
+require __DIR__ . '/../includes/dashboard-header.php';
+
+$itemId      = (int)($item['id']          ?? 0);
+$title       = (string)($item['title']    ?? '');
 $description = (string)($item['description'] ?? '');
-$price = (string)($item['price'] ?? '');
-$city = (string)($item['city'] ?? '');
-$mode = (string)($item['mode'] ?? 'sell');
-$image = $item['image'] ?? null;
+$price       = (string)($item['price']    ?? '');
+$city        = (string)($item['city']     ?? '');
+$mode        = (string)($item['mode']     ?? 'sell');
+$image       = $item['image']             ?? null;
 ?>
 
-<main class="px-4 sm:px-6 lg:px-8 py-6">
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+    <a href="/dashboard">Home</a>
+    <span class="sep">/</span>
+    <a href="/items">My Listings</a>
+    <span class="sep">/</span>
+    <span class="current">Edit Item</span>
+</div>
 
-    <!-- Breadcrumb -->
-    <div class="flex items-center gap-2 text-xs text-gray-500 mb-5">
-        <a href="/dashboard" class="hover:text-brand-500">Home</a>
-        <span>/</span>
-        <a href="/items" class="hover:text-brand-500">My Listings</a>
-        <span>/</span>
-        <span class="text-gray-700 font-medium">Edit Item</span>
-    </div>
-
-    <div class="max-w-2xl">
-        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            <!-- Header -->
-            <div class="px-6 py-5 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
-                <div>
-                    <h1 class="text-lg font-bold text-gray-900">Edit Listing</h1>
-                    <p class="text-sm text-gray-500 mt-0.5">Update your item details below</p>
-                </div>
-                <a href="/items" class="text-sm font-semibold text-brand-500 hover:text-brand-700">← Back</a>
+<div class="max-w-2xl">
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <div class="card-header-title">Edit Listing</div>
+                <div class="card-header-sub">Update your item details below</div>
             </div>
+            <a href="/items" class="btn btn-ghost btn-sm text-brand">← Back</a>
+        </div>
 
-            <!-- Current Image Preview -->
-            <?php if (!empty($image)): ?>
-            <div class="px-6 pt-5">
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Current Image</p>
-                <div class="relative w-32 h-24 rounded-xl overflow-hidden border border-gray-200">
-                    <img src="/uploads/items/<?= htmlspecialchars((string)$image) ?>" alt="Current" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-black/20 flex items-end">
-                        <span class="text-white text-xs font-semibold px-2 py-1 w-full text-center bg-black/40">Current</span>
-                    </div>
-                </div>
+        <!-- Current image preview -->
+        <?php if (!empty($image)): ?>
+        <div style="padding:18px 24px 0;">
+            <div style="font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:8px;">Current Image</div>
+            <div style="position:relative;width:128px;height:96px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);">
+                <img src="/uploads/items/<?= htmlspecialchars((string)$image) ?>"
+                     alt="Current" style="width:100%;height:100%;object-fit:cover;" />
+                <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.45);text-align:center;padding:4px;font-size:.625rem;color:#fff;font-weight:600;">Current</div>
             </div>
-            <?php endif; ?>
+        </div>
+        <?php endif; ?>
 
-            <!-- Errors -->
-            <?php if (!empty($errors)): ?>
-            <div class="mx-6 mt-5 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-                <div class="flex items-start gap-2">
-                    <svg class="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <ul class="space-y-0.5 text-sm text-red-600">
-                        <?php foreach ($errors as $error): ?>
-                        <li><?= htmlspecialchars($error) ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
+        <!-- Errors -->
+        <?php if (!empty($errors)): ?>
+        <div style="margin:16px 24px 0;">
+            <div class="alert alert-red" style="flex-direction:column;gap:3px;">
+                <?php foreach ($errors as $error): ?><div><?= htmlspecialchars($error) ?></div><?php endforeach; ?>
             </div>
-            <?php endif; ?>
+        </div>
+        <?php endif; ?>
 
-            <!-- Form -->
-            <form action="/items/edit/<?= $itemId ?>" method="POST" enctype="multipart/form-data" class="p-6 space-y-5">
+        <div class="card-body">
+            <form action="/items/edit/<?= $itemId ?>" method="POST" enctype="multipart/form-data" class="space-y-5">
 
-                <div>
-                    <label for="title" class="block text-sm font-semibold text-gray-700 mb-1.5">Item Title <span class="text-red-500">*</span></label>
-                    <input id="title" name="title" type="text" value="<?= htmlspecialchars($title) ?>"
-                        class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-200 outline-none transition-colors" />
+                <div class="form-group">
+                    <label for="title" class="form-label">Item Title <span class="req">*</span></label>
+                    <input id="title" name="title" type="text"
+                           value="<?= htmlspecialchars($title) ?>"
+                           class="form-control" />
                 </div>
 
-                <div>
-                    <label for="description" class="block text-sm font-semibold text-gray-700 mb-1.5">Description <span class="text-red-500">*</span></label>
+                <div class="form-group">
+                    <label for="description" class="form-label">Description <span class="req">*</span></label>
                     <textarea id="description" name="description" rows="4"
-                        class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-200 outline-none transition-colors resize-none"><?= htmlspecialchars($description) ?></textarea>
+                              class="form-control"><?= htmlspecialchars($description) ?></textarea>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                        <label for="price" class="block text-sm font-semibold text-gray-700 mb-1.5">Price (₹) <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-semibold">₹</span>
-                            <input id="price" name="price" type="number" min="1" step="1" value="<?= htmlspecialchars($price) ?>"
-                                class="w-full pl-7 pr-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-200 outline-none transition-colors" />
+                <div class="form-grid-3">
+                    <div class="form-group">
+                        <label for="price" class="form-label">Price (₹) <span class="req">*</span></label>
+                        <div class="input-prefix-wrap">
+                            <span class="input-prefix">₹</span>
+                            <input id="price" name="price" type="number" min="1" step="1"
+                                   value="<?= htmlspecialchars($price) ?>"
+                                   class="form-control" />
                         </div>
                     </div>
-                    <div>
-                        <label for="city" class="block text-sm font-semibold text-gray-700 mb-1.5">City <span class="text-red-500">*</span></label>
-                        <input id="city" name="city" type="text" value="<?= htmlspecialchars($city) ?>"
-                            class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-200 outline-none transition-colors" />
+                    <div class="form-group">
+                        <label for="city" class="form-label">City <span class="req">*</span></label>
+                        <input id="city" name="city" type="text"
+                               value="<?= htmlspecialchars($city) ?>"
+                               class="form-control" />
                     </div>
-                    <div>
-                        <label for="mode" class="block text-sm font-semibold text-gray-700 mb-1.5">Listing Type <span class="text-red-500">*</span></label>
-                        <select id="mode" name="mode"
-                            class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:border-brand-500 focus:ring-1 focus:ring-brand-200 outline-none transition-colors bg-white">
+                    <div class="form-group">
+                        <label for="mode" class="form-label">Listing Type <span class="req">*</span></label>
+                        <select id="mode" name="mode" class="form-control">
                             <option value="sell" <?= $mode === 'sell' ? 'selected' : '' ?>>For Sale</option>
                             <option value="rent" <?= $mode === 'rent' ? 'selected' : '' ?>>For Rent</option>
                         </select>
                     </div>
                 </div>
 
-                <div>
-                    <label for="image" class="block text-sm font-semibold text-gray-700 mb-1.5">Replace Photo</label>
-                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-5 text-center hover:border-brand-400 transition-colors">
-                        <p class="text-sm text-gray-500 mb-1">Upload a new photo to replace the current one</p>
-                        <p class="text-xs text-gray-400 mb-3">JPG, PNG, WEBP · Max 5MB</p>
+                <div class="form-group">
+                    <label class="form-label">Replace Photo</label>
+                    <div class="upload-zone">
+                        <p>Upload a new photo to replace the current one</p>
+                        <small>JPG, PNG, WEBP · Max 5MB</small>
                         <input id="image" name="image" type="file" accept="image/*"
-                            class="block mx-auto text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer" />
+                               class="file-input" />
                     </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-3 pt-2 border-t border-gray-100">
-                    <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-3 rounded-lg text-sm transition-colors shadow-sm">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                <div style="display:flex;flex-wrap:wrap;gap:12px;padding-top:10px;border-top:1px solid var(--border-light);">
+                    <button type="submit" class="btn btn-primary btn-lg" style="flex:1;min-width:140px;">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                         Save Changes
                     </button>
-                    <a href="/items" class="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-600 hover:bg-gray-50 font-semibold px-6 py-3 rounded-lg text-sm transition-colors">
-                        Cancel
-                    </a>
+                    <a href="/items" class="btn btn-secondary btn-lg" style="flex:1;min-width:100px;justify-content:center;">Cancel</a>
                 </div>
             </form>
         </div>
     </div>
+</div>
 
-</main>
-
-<?php require __DIR__ . '/../dashboard/footer.php'; ?>
+<?php require __DIR__ . '/../includes/dashboard-footer.php'; ?>

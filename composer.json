@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "phpmailer/phpmailer": "^6.9",
+        "phpmailer/phpmailer": "^7.0",
         "vlucas/phpdotenv": "^5.6",
         "monolog/monolog": "^3.10",
         "blakvghost/php-validator": "^2.3"

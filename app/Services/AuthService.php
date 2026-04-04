@@ -16,9 +16,9 @@ class AuthService
 
     public function __construct()
     {
-        $this->userConn = new User()->conn;
-        $this->emailVerifyConn = new EmailVerification()->conn;
-        $this->resetOtpConn = new ResetPasswordOtp()->conn;
+        $this->userConn = (new User())->conn;
+        $this->emailVerifyConn = (new EmailVerification())->conn;
+        $this->resetOtpConn = (new ResetPasswordOtp())->conn;
         $this->mailService = new MailService();
     }
 
