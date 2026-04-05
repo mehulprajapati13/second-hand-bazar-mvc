@@ -3,14 +3,15 @@ declare(strict_types=1);
 
 session_start();
 
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
 use Vendor\App\Core\Logger;
 use Vendor\App\Facade\Route;
 
-$dotenv = Dotenv::createUnsafeImmutable(dirname(__DIR__));
-$dotenv->load();
+$dotenv = Dotenv::createImmutable(dirname(__DIR__));
+$dotenv->safeLoad();
 
 $constants = require_once __DIR__ . '/../config/constant.php';
 foreach ($constants as $key => $value) {
