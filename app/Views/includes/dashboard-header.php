@@ -136,6 +136,62 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                 </div>
             </div>
         </nav>
-
         <!-- Page Content -->
         <div class="page-content">
+
+            <?php if (!empty($_SESSION['flash'])): ?>
+                <?php $flash = $_SESSION['flash'];
+                unset($_SESSION['flash']); ?>
+                <div id="toast-msg" style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            background: <?= $flash['type'] === 'success' ? '#22c55e' : '#ef4444' ?>;
+            color: #fff;
+            min-width: 240px;
+            max-width: 380px;
+        ">
+                    <?php if ($flash['type'] === 'success'): ?>
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                    <?php else: ?>
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" style="flex-shrink:0;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    <?php endif; ?>
+                    <span><?= htmlspecialchars($flash['msg']) ?></span>
+                    <button onclick="this.parentElement.remove()" style="
+                margin-left: auto;
+                background: none;
+                border: none;
+                color: #fff;
+                cursor: pointer;
+                padding: 0;
+                line-height: 1;
+                opacity: 0.8;
+                font-size: 1rem;
+            ">✕</button>
+                </div>
+                <script>
+                    setTimeout(function() {
+                        var t = document.getElementById('toast-msg');
+                        if (t) {
+                            t.style.transition = 'opacity 0.5s ease';
+                            t.style.opacity = '0';
+                            setTimeout(function() {
+                                t.remove();
+                            }, 500);
+                        }
+                    }, 3500);
+                </script>
+            <?php endif; ?>

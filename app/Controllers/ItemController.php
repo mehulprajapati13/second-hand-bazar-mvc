@@ -60,13 +60,18 @@ class ItemController extends Controller
         }
 
         $saved = $this->itemService->addItem(
-            $userId, $title, $description,
-            (float)$price, $mode, $city, $image
+            $userId,
+            $title,
+            $description,
+            (float)$price,
+            $mode,
+            $city,
+            $image
         );
 
         if ($saved) {
-            header("Location: /items?msg=added");
-            exit;
+            $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Item listed successfully.'];
+            header("Location: /items");
         }
 
         $this->view('items/add', [
@@ -206,13 +211,18 @@ class ItemController extends Controller
         }
 
         $updated = $this->itemService->updateItem(
-            $itemId, $title, $description,
-            (float)$price, $mode, $city, $image
+            $itemId,
+            $title,
+            $description,
+            (float)$price,
+            $mode,
+            $city,
+            $image
         );
 
         if ($updated) {
-            header("Location: /items?msg=updated");
-            exit;
+            $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Item updated successfully.'];
+            header("Location: /items");
         }
 
         $this->view('items/edit', [
@@ -228,7 +238,8 @@ class ItemController extends Controller
 
         $this->itemService->deleteItem($itemId, $userId);
 
-        header("Location: /items?msg=deleted");
+        $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Item deleted successfully.'];
+        header("Location: /items");
         exit;
     }
 

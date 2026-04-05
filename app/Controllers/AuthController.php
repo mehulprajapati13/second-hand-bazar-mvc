@@ -253,10 +253,11 @@ class AuthController extends Controller
             }
 
             $_SESSION['user'] = [
-                'id' => $result['id'],
-                'name' => $result['name'],
+                'id'    => $result['id'],
+                'name'  => $result['name'],
                 'email' => $result['email'],
-                'city' => $result['city'],
+                'city'  => $result['city'],
+                'phone' => $result['phone'],
             ];
 
             header("Location: /dashboard");

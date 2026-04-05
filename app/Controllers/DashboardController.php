@@ -87,7 +87,6 @@ class DashboardController extends Controller
             return;
         }
 
-        // Update in database
         $db   = new Database();
         $conn = $db->getConnection();
         $stmt = $conn->prepare(
@@ -96,11 +95,15 @@ class DashboardController extends Controller
         $stmt->bind_param("sssi", $name, $phone, $city, $userId);
         $stmt->execute();
 
-        // Update session so navbar shows new name immediately
-        $_SESSION['user']['name'] = $name;
-        $_SESSION['user']['city'] = $city;
+        // Update all relevant fields in session immediately
+        $_SESSION['user']['name']  = $name;
+        $_SESSION['user']['phone'] = $phone;
+        $_SESSION['user']['city']  = $city;
 
-        header("Location: /profile?msg=updated");
+        // Flash toast message
+        $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Profile updated successfully.'];
+
+        header("Location: /profile");
         exit;
     }
 }
