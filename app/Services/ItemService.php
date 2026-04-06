@@ -2,6 +2,7 @@
 
 namespace Vendor\App\Services;
 
+use Exception;
 use Vendor\App\Core\Database;
 
 class ItemService
@@ -49,16 +50,13 @@ class ItemService
         if (!$item || $item['status'] !== 'active') {
             return false;
         }
-        try {
-            $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM requests WHERE item_id = ? AND status IN ('pending', 'approved')");
-            $stmt->bind_param("i", $itemId);
-            $stmt->execute();
-            $row = $stmt->get_result()->fetch_assoc();
 
-            return (int)($row['total'] ?? 0) === 0;
-        } catch (\Throwable $e) {
-            return true;
-        }
+        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM requests WHERE item_id = ? AND status IN ('pending', 'approved')");
+        $stmt->bind_param("i", $itemId);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+
+        return (int)($row['total'] ?? 0) === 0;
     }
 
     public function updateItem(int $itemId, string $title, string $description, float  $price, string $mode, string $city, ?string $image): bool
