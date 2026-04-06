@@ -49,8 +49,6 @@ class ItemService
         if (!$item || $item['status'] !== 'active') {
             return false;
         }
-
-        // Request module is optional right now; allow editing when request data is unavailable.
         try {
             $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM requests WHERE item_id = ? AND status IN ('pending', 'approved')");
             $stmt->bind_param("i", $itemId);
@@ -66,11 +64,12 @@ class ItemService
     public function updateItem(int $itemId, string $title, string $description, float  $price, string $mode, string $city, ?string $image): bool
     {
         if ($image === null) {
-            $stmt = $this->conn->prepare( "UPDATE items SET title = ?, description = ?, price = ?, mode = ?, city = ? WHERE id = ?");
+            $stmt = $this->conn->prepare("UPDATE items SET title = ?, description = ?, price = ?, mode = ?, city = ? WHERE id = ?");
             $stmt->bind_param("ssdssi", $title, $description, $price, $mode, $city, $itemId);
         } else {
             $stmt = $this->conn->prepare(
-                "UPDATE items SET title = ?, description = ?, price = ?, mode = ?, city = ?, image = ? WHERE id = ?");
+                "UPDATE items SET title = ?, description = ?, price = ?, mode = ?, city = ?, image = ? WHERE id = ?"
+            );
             $stmt->bind_param("ssdsssi", $title, $description, $price, $mode, $city, $image, $itemId);
         }
 
@@ -115,13 +114,11 @@ class ItemService
                 JOIN users ON users.id = items.user_id
                 WHERE $where
                 ORDER BY items.created_at DESC";
-
         $stmt = $this->conn->prepare($sql);
 
         if (!empty($params)) {
             $stmt->bind_param($types, ...$params);
         }
-
         $stmt->execute();
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }

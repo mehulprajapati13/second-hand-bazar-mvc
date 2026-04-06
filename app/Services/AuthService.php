@@ -2,29 +2,24 @@
 
 namespace Vendor\App\Services;
 
-use Vendor\App\Models\User;
-use Vendor\App\Models\EmailVerification;
-use Vendor\App\Models\ResetPasswordOtp;
+use Vendor\App\Core\Database;
 use Vendor\App\Services\MailService;
 
 class AuthService
 {
-    private $userConn;
-    private $emailVerifyConn;
-    private $resetOtpConn;
+    private $conn;
     private MailService $mailService;
 
     public function __construct()
     {
-        $this->userConn = (new User())->conn;
-        $this->emailVerifyConn = (new EmailVerification())->conn;
-        $this->resetOtpConn = (new ResetPasswordOtp())->conn;
+        $db = new Database();
+        $this->conn = $db->getConnection();
         $this->mailService = new MailService();
     }
 
     public function register(string $name, string $email, string $phone, string $city, string $password)
     {
-        $checkEmail = $this->userConn->prepare("SELECT id, is_verified FROM users WHERE email = ?");
+        $checkEmail = $this->conn->prepare("SELECT id, is_verified FROM users WHERE email = ?");
         $checkEmail->bind_param("s", $email);
         $checkEmail->execute();
         $existingUser = $checkEmail->get_result()->fetch_assoc();
@@ -39,11 +34,11 @@ class AuthService
         }
 
         $hashPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $this->userConn->prepare("INSERT INTO users (name, email, phone, city, password, is_verified)
+        $stmt = $this->conn->prepare("INSERT INTO users (name, email, phone, city, password, is_verified)
                 VALUES (?, ?, ?, ?, ?, 0)");
         $stmt->bind_param("sssss", $name, $email, $phone, $city, $hashPassword);
         $stmt->execute();
-        $userId = $this->userConn->insert_id;
+        $userId = $this->conn->insert_id;
 
         $sent = $this->generateAndSendOtp($userId, $email, $name);
         return [
@@ -55,13 +50,13 @@ class AuthService
 
     public function generateAndSendOtp(int $userId, string $email, string $name)
     {
-        $deleteOtp = $this->emailVerifyConn->prepare("DELETE FROM email_verification WHERE user_id = ?");
+        $deleteOtp = $this->conn->prepare("DELETE FROM email_verification WHERE user_id = ?");
         $deleteOtp->bind_param("i", $userId);
         $deleteOtp->execute();
 
-        $otp = rand(100000, 999999);
+        $otp = random_int(100000, 999999);
         $expiresAt = date('Y-m-d H:i:s', time() + (5 * 60));
-        $stmt = $this->emailVerifyConn->prepare("INSERT INTO email_verification (user_id, otp, expires_at, attempts)
+        $stmt = $this->conn->prepare("INSERT INTO email_verification (user_id, otp, expires_at, attempts)
                 VALUES (?, ?, ?, 0)");
         $stmt->bind_param("iss", $userId, $otp, $expiresAt);
         $stmt->execute();
@@ -70,7 +65,7 @@ class AuthService
 
     public function verifyOtp(string $email, string $otp)
     {
-        $checkEmail = $this->userConn->prepare("SELECT id FROM users WHERE email = ?");
+        $checkEmail = $this->conn->prepare("SELECT id FROM users WHERE email = ?");
         $checkEmail->bind_param("s", $email);
         $checkEmail->execute();
         $user = $checkEmail->get_result()->fetch_assoc();
@@ -81,7 +76,7 @@ class AuthService
 
         $userId = (int)$user['id'];
 
-        $stmt = $this->emailVerifyConn->prepare("SELECT * FROM email_verification WHERE user_id = ?");
+        $stmt = $this->conn->prepare("SELECT * FROM email_verification WHERE user_id = ?");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $verification = $stmt->get_result()->fetch_assoc();
@@ -99,14 +94,14 @@ class AuthService
         }
 
         if ($verification['otp'] != $otp) {
-            $otpcount = $this->emailVerifyConn->prepare("UPDATE email_verification SET attempts = attempts + 1 WHERE user_id = ?");
+            $otpcount = $this->conn->prepare("UPDATE email_verification SET attempts = attempts + 1 WHERE user_id = ?");
             $otpcount->bind_param("i", $userId);
             $otpcount->execute();
 
             return 'wrong_otp';
         }
 
-        $verifyOtp = $this->userConn->prepare("UPDATE users SET is_verified = 1 WHERE id = ?");
+        $verifyOtp = $this->conn->prepare("UPDATE users SET is_verified = 1 WHERE id = ?");
         $verifyOtp->bind_param("i", $userId);
         $verifyOtp->execute();
 
@@ -115,7 +110,7 @@ class AuthService
 
     public function resendOtp(string $email)
     {
-        $stmt = $this->userConn->prepare("SELECT id, name, is_verified FROM users WHERE email = ?");
+        $stmt = $this->conn->prepare("SELECT id, name, is_verified FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $user = $stmt->get_result()->fetch_assoc();
@@ -135,7 +130,7 @@ class AuthService
 
     public function login(string $email, string $password)
     {
-        $stmt = $this->userConn->prepare("SELECT * FROM users WHERE email = ? AND deleted_at IS NULL");
+        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ? AND deleted_at IS NULL");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $user = $stmt->get_result()->fetch_assoc();
@@ -157,7 +152,7 @@ class AuthService
 
     public function sendForgotOtp(string $email)
     {
-        $stmt = $this->userConn->prepare("SELECT id, name FROM users WHERE email = ? AND deleted_at IS NULL");
+        $stmt = $this->conn->prepare("SELECT id, name FROM users WHERE email = ? AND deleted_at IS NULL");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $user = $stmt->get_result()->fetch_assoc();
@@ -166,14 +161,14 @@ class AuthService
             return 'not_found';
         }
 
-        $deleteOtp = $this->resetOtpConn->prepare("DELETE FROM reset_password_otp WHERE user_id = ?");
+        $deleteOtp = $this->conn->prepare("DELETE FROM reset_password_otp WHERE user_id = ?");
         $deleteOtp->bind_param("i", $user['id']);
         $deleteOtp->execute();
 
-        $otp = rand(100000, 999999);
+        $otp = random_int(100000, 999999);
         $expires_at = date('Y-m-d H:i:s', time() + (5 * 60));
 
-        $storeOtp = $this->resetOtpConn->prepare("INSERT INTO reset_password_otp (user_id, otp, expires_at, attempts)
+        $storeOtp = $this->conn->prepare("INSERT INTO reset_password_otp (user_id, otp, expires_at, attempts)
         VALUES (?, ?, ?, 0)");
         $storeOtp->bind_param("iss", $user['id'], $otp, $expires_at);
         $storeOtp->execute();
@@ -185,7 +180,7 @@ class AuthService
 
     public function verifyFOrgotOtp(string $email, string $otp)
     {
-        $stmt = $this->userConn->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $user = $stmt->get_result()->fetch_assoc();
@@ -196,7 +191,7 @@ class AuthService
 
         $userId = (int)$user['id'];
 
-        $stmt = $this->resetOtpConn->prepare("SELECT * FROM reset_password_otp WHERE user_id = ?");
+        $stmt = $this->conn->prepare("SELECT * FROM reset_password_otp WHERE user_id = ?");
         $stmt->bind_param("i", $userId);
         $stmt->execute();
         $otpRow = $stmt->get_result()->fetch_assoc();
@@ -214,7 +209,7 @@ class AuthService
         }
 
         if ($otpRow['otp'] != $otp) {
-            $otpCount = $this->resetOtpConn->prepare("UPDATE reset_password_otp SET attempts = attempts + 1 WHERE user_id = ?");
+            $otpCount = $this->conn->prepare("UPDATE reset_password_otp SET attempts = attempts + 1 WHERE user_id = ?");
             $otpCount->bind_param("i", $userId);
             $otpCount->execute();
 
@@ -230,7 +225,7 @@ class AuthService
             return $otpStatus;
         }
 
-        $stmt = $this->userConn->prepare("SELECT id FROM users WHERE email = ?");
+        $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $user = $stmt->get_result()->fetch_assoc();
@@ -241,11 +236,11 @@ class AuthService
 
         $hashPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
-        $updatePassword = $this->userConn->prepare("UPDATE users SET password = ? WHERE id = ?");
+        $updatePassword = $this->conn->prepare("UPDATE users SET password = ? WHERE id = ?");
         $updatePassword->bind_param("si", $hashPassword, $user['id']);
         $updatePassword->execute();
 
-        $deletePassword = $this->resetOtpConn->prepare("DELETE FROM reset_password_otp WHERE user_id = ?");
+        $deletePassword = $this->conn->prepare("DELETE FROM reset_password_otp WHERE user_id = ?");
         $deletePassword->bind_param("i", $user['id']);
         $deletePassword->execute();
 

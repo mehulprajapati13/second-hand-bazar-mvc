@@ -59,15 +59,7 @@ class ItemController extends Controller
             $image = $uploadResult['filename'];
         }
 
-        $saved = $this->itemService->addItem(
-            $userId,
-            $title,
-            $description,
-            (float)$price,
-            $mode,
-            $city,
-            $image
-        );
+        $saved = $this->itemService->addItem($userId, $title, $description, (float)$price,  $mode, $city, $image);
 
         if ($saved) {
             $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Item listed successfully.'];
@@ -76,7 +68,7 @@ class ItemController extends Controller
 
         $this->view('items/add', [
             'errors' => ['Failed to save item. Please try again.'],
-            'old'    => $old,
+            'old' => $old,
         ]);
     }
 
@@ -105,8 +97,8 @@ class ItemController extends Controller
     {
         $filters = [
             'search' => trim($_GET['search'] ?? ''),
-            'city'   => trim($_GET['city'] ?? ''),
-            'mode'   => trim($_GET['mode'] ?? ''),
+            'city' => trim($_GET['city'] ?? ''),
+            'mode' => trim($_GET['mode'] ?? ''),
         ];
 
         $items = $this->itemService->getMarketplaceItems($filters);
@@ -121,7 +113,7 @@ class ItemController extends Controller
     {
         $itemId = (int)$id;
         $userId = $_SESSION['user']['id'];
-        $item   = $this->itemService->getMarketplaceItemWithSeller($itemId);
+        $item = $this->itemService->getMarketplaceItemWithSeller($itemId);
 
         if (!$item) {
             header("Location: /browse");
@@ -129,15 +121,13 @@ class ItemController extends Controller
         }
 
         $similarItems = $this->itemService->getSimilarItems($item['mode'], $itemId);
-
-        // isOwner — true if logged-in user owns this item
         $isOwner = (int)$item['user_id'] === (int)$userId;
 
         $this->view('items/details', [
-            'item'         => $item,
+            'item' => $item,
             'similarItems' => $similarItems,
-            'isOwner'      => $isOwner,
-            'alreadySent'  => false,
+            'isOwner' => $isOwner,
+            'alreadySent' => false,
         ]);
     }
 
@@ -210,15 +200,7 @@ class ItemController extends Controller
             $image = $uploadResult['filename'];
         }
 
-        $updated = $this->itemService->updateItem(
-            $itemId,
-            $title,
-            $description,
-            (float)$price,
-            $mode,
-            $city,
-            $image
-        );
+        $updated = $this->itemService->updateItem($itemId, $title, $description, (float)$price, $mode, $city, $image);
 
         if ($updated) {
             $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Item updated successfully.'];
@@ -258,7 +240,7 @@ class ItemController extends Controller
         }
 
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename  = uniqid('item_', true) . '.' . $extension;
+        $filename   = uniqid('item_', true) . '.' . $extension;
 
         $uploadDir = __DIR__ . '/../../public/uploads/items/';
 

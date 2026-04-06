@@ -12,14 +12,14 @@ class MailService
     {
         $mail = new PHPMailer(true);
 
-        $mail->SMTPDebug  = SMTP::DEBUG_OFF;
+        $mail->SMTPDebug = SMTP::DEBUG_OFF;
         $mail->isSMTP();
-        $mail->Host       = $_ENV['MAIL_HOST'];
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $_ENV['MAIL_USERNAME'];
-        $mail->Password   = $_ENV['MAIL_PASSWORD'];
+        $mail->Host = $_ENV['MAIL_HOST'];
+        $mail->SMTPAuth = true;
+        $mail->Username = $_ENV['MAIL_USERNAME'];
+        $mail->Password = $_ENV['MAIL_PASSWORD'];
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+        $mail->Port = 587;
 
         $mail->setFrom(
             $_ENV['MAIL_FROM_ADDRESS'],
@@ -29,11 +29,8 @@ class MailService
         return $mail;
     }
 
-    public function sendOtpEmail(
-        string $toEmail,
-        string $toName,
-        string $otp
-    ): bool {
+    public function sendOtpEmail(string $toEmail, string $toName, string $otp): bool
+    {
         try {
             $mail = $this->buildMailer();
 
@@ -52,17 +49,12 @@ class MailService
 
             $mail->send();
             return true;
-
         } catch (Exception $e) {
             return false;
         }
     }
 
-    public function sendForgotOtpEmail(
-        string $toEmail,
-        string $toName,
-        string $otp
-    ): bool {
+    public function sendForgotOtpEmail(string $toEmail,string $toName,string $otp): bool {
         try {
             $mail = $this->buildMailer();
 
@@ -81,7 +73,6 @@ class MailService
 
             $mail->send();
             return true;
-
         } catch (Exception $e) {
             return false;
         }

@@ -56,8 +56,6 @@
                         <!-- Error Messages - Very Visible -->
                         <?php if (!empty($errors)): ?>
                             <div class="alert alert-danger auth-alert" role="alert">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                <strong>Error!</strong>
                                 <ul class="mb-0 mt-2 ps-3">
                                     <?php foreach ($errors as $error): ?>
                                         <li><?= htmlspecialchars($error) ?></li>
@@ -89,7 +87,7 @@
                                 <label for="email" class="form-label fw-semibold">Email address</label>
                                 <input type="email" class="form-control" id="email" name="email"
                                     value="<?= htmlspecialchars($email ?? '') ?>"
-                                    placeholder="name@example.com" required>
+                                    placeholder="name@example.com" >
                             </div>
 
                             <div class="mb-3">
@@ -98,7 +96,7 @@
                                     <a href="/forgot-password" class="text-decoration-none small">Forgot password?</a>
                                 </div>
                                 <input type="password" class="form-control" id="password" name="password"
-                                    placeholder="Enter your password" required>
+                                    placeholder="Enter your password">
                             </div>
 
                             <button type="submit" class="btn btn-brand w-100 py-2 fw-semibold">

@@ -7,14 +7,8 @@ use BlakvGhost\PHPValidator\ValidatorException;
 
 class ItemValidation
 {
-    public function validate(
-        string $title,
-        string $description,
-        string $price,
-        string $mode,
-        string $city
-    ): array {
-
+    public function validate(string $title, string $description, string $price, string $mode, string $city): array
+    {
         try {
             $data = [
                 'title' => $title,

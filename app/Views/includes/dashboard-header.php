@@ -21,7 +21,7 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                     <i class="bi bi-cart3"></i>
                 </div>
                 <div class="ms-2">
-                    <div class="logo-text">SecondHand<span class="text-brand">Bazaar</span></div>
+                    <div class="logo-text text-dark">SecondHand<span class="text-brand">Bazaar</span></div>
                     <small class="text-muted">Marketplace</small>
                 </div>
             </a>

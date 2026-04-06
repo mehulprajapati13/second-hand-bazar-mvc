@@ -16,7 +16,6 @@
                     <?php foreach ($errors as $error): ?>
                         <div><?= htmlspecialchars($error) ?></div>
                     <?php endforeach; ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             <?php endif; ?>
 
@@ -35,7 +34,7 @@
                     <label for="email" class="form-label">Email address</label>
                     <input id="email" name="email" type="email" class="form-control"
                         value="<?= htmlspecialchars($email ?? '') ?>"
-                        placeholder="name@example.com" required />
+                        placeholder="name@example.com" />
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100 btn-lg">Send Reset OTP</button>

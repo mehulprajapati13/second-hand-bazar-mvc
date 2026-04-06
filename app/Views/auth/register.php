@@ -1,5 +1,4 @@
-﻿<?php $pageTitle = 'Create Account'; ?>
-<?php require __DIR__ . '/../includes/head.php'; ?>
+﻿<?php require __DIR__ . '/../includes/head.php'; ?>
 
 <div class="container-fluid">
     <div class="row min-vh-100">
@@ -34,11 +33,11 @@
                 </div>
 
                 <!-- Footer -->
-                <p class="text-muted small mb-0">© <?= date('Y') ?> SecondHand Bazaar</p>
+                <p class="text-muted small text-white mb-0">© <?= date('Y') ?> SecondHand Bazaar</p>
             </div>
         </div>
 
-        <!-- Right Side - Registration Form -->
+        <!-- Right Side - Registration Form --> 
         <div class="col-lg-7 d-flex align-items-center justify-content-center p-4">
             <div class="w-100" style="max-width: 500px;">
                 <!-- Mobile Logo -->
@@ -60,8 +59,6 @@
                         <!-- Error Messages - Very Visible -->
                         <?php if (!empty($errors)): ?>
                             <div class="alert alert-danger auth-alert" role="alert">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                <strong>Error!</strong>
                                 <ul class="mb-0 mt-2 ps-3">
                                     <?php foreach ($errors as $error): ?>
                                         <li><?= htmlspecialchars($error) ?></li>
@@ -76,7 +73,7 @@
                                 <label for="name" class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="name" name="name"
                                     value="<?= htmlspecialchars($old['name'] ?? '') ?>"
-                                    placeholder="Rahul Sharma" required>
+                                    placeholder="Rahul Sharma">
                             </div>
 
                             <div class="row g-3 mb-3">
@@ -84,13 +81,13 @@
                                     <label for="email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control" id="email" name="email"
                                         value="<?= htmlspecialchars($old['email'] ?? '') ?>"
-                                        placeholder="name@example.com" required>
+                                        placeholder="name@example.com">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="phone" class="form-label fw-semibold">Phone <span class="text-danger">*</span></label>
                                     <input type="tel" class="form-control" id="phone" name="phone"
                                         value="<?= htmlspecialchars($old['phone'] ?? '') ?>"
-                                        placeholder="9876543210" required>
+                                        placeholder="9876543210">
                                 </div>
                             </div>
 
@@ -98,19 +95,19 @@
                                 <label for="city" class="form-label fw-semibold">City <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="city" name="city"
                                     value="<?= htmlspecialchars($old['city'] ?? '') ?>"
-                                    placeholder="Mumbai, Delhi, Jaipur..." required>
+                                    placeholder="Mumbai, Delhi, Jaipur...">
                             </div>
 
                             <div class="row g-3 mb-3">
                                 <div class="col-md-6">
                                     <label for="password" class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
                                     <input type="password" class="form-control" id="password" name="password"
-                                        placeholder="Min 8 characters" required>
+                                        placeholder="Min 8 characters">
                                 </div>
                                 <div class="col-md-6">
                                     <label for="password_confirmation" class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
                                     <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
-                                        placeholder="Re-enter password" required>
+                                        placeholder="Re-enter password">
                                 </div>
                             </div>
 

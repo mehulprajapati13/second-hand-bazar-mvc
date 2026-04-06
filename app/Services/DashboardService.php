@@ -37,8 +37,7 @@ class DashboardService
 
     private function countItemsByStatus(int $userId, string $status): int
     {
-        $stmt = $this->conn->prepare(
-            "SELECT COUNT(*) as total FROM items WHERE user_id = ? AND status = ? AND deleted_at IS NULL");
+        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM items WHERE user_id = ? AND status = ? AND deleted_at IS NULL");
         $stmt->bind_param("is", $userId, $status);
         $stmt->execute();
         $row = $stmt->get_result()->fetch_assoc();
@@ -47,28 +46,26 @@ class DashboardService
 
     private function countRequestsReceived(int $userId): int
     {
-        try {
-            $stmt = $this->conn->prepare(
-                "SELECT COUNT(*) as total FROM requests WHERE owner_id = ? AND status = 'pending' ");
-            $stmt->bind_param("i", $userId);
-            $stmt->execute();
-            $row = $stmt->get_result()->fetch_assoc();
-            return (int)($row['total'] ?? 0);
-        } catch (\Throwable $e) {
-            return 0;
-        }
+        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM requests WHERE owner_id = ? AND status = 'pending' ");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        return (int)($row['total'] ?? 0);
     }
 
     private function countRequestsSent(int $userId): int
     {
-        try {
-            $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM requests WHERE requester_id = ?");
-            $stmt->bind_param("i", $userId);
-            $stmt->execute();
-            $row = $stmt->get_result()->fetch_assoc();
-            return (int)($row['total'] ?? 0);
-        } catch (\Throwable $e) {
-            return 0;
-        }
+        $stmt = $this->conn->prepare("SELECT COUNT(*) as total FROM requests WHERE requester_id = ?");
+        $stmt->bind_param("i", $userId);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
+        return (int)($row['total'] ?? 0);
+    }
+
+    public function updateProfile(int $userId, string $name, string $phone, string $city): bool
+    {
+        $stmt = $this->conn->prepare("UPDATE users SET name = ?, phone = ?, city = ? WHERE id = ?" );
+        $stmt->bind_param("sssi", $name, $phone, $city, $userId);
+        return $stmt->execute();
     }
 }

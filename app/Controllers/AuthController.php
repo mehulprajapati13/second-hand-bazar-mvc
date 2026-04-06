@@ -75,10 +75,7 @@ class AuthController extends Controller
             header("Location: /verify-otp");
             exit;
         } catch (Exception $e) {
-            $this->log($e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
+            $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
             $this->view('auth/register', [
                 'errors' => ['Something went wrong. Please try again.'],
                 'old' => [],
@@ -142,10 +139,7 @@ class AuthController extends Controller
                 'message' => '',
             ]);
         } catch (Exception $e) {
-            $this->log($e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
+            $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
             $this->view('auth/verify_otp', [
                 'email' => $_POST['email'] ?? '',
                 'errors' => ['Something went wrong.'],
@@ -183,10 +177,7 @@ class AuthController extends Controller
             header("Location: /verify-otp");
             exit;
         } catch (Exception $e) {
-            $this->log($e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
+            $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
             header("Location: /register");
             exit;
         }
@@ -214,7 +205,7 @@ class AuthController extends Controller
     public function login(): void
     {
         try {
-            $email = trim($_POST['email']    ?? '');
+            $email = trim($_POST['email'] ?? '');
             $password = trim($_POST['password'] ?? '');
 
             $validator = new LoginValidation();
@@ -253,20 +244,17 @@ class AuthController extends Controller
             }
 
             $_SESSION['user'] = [
-                'id'    => $result['id'],
-                'name'  => $result['name'],
+                'id' => $result['id'],
+                'name' => $result['name'],
                 'email' => $result['email'],
-                'city'  => $result['city'],
+                'city' => $result['city'],
                 'phone' => $result['phone'],
             ];
 
             header("Location: /dashboard");
             exit;
         } catch (Exception $e) {
-            $this->log($e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
+            $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
             $this->view('auth/login', [
                 'errors' => ['Something went wrong.'],
                 'success' => '',
@@ -320,10 +308,7 @@ class AuthController extends Controller
             header("Location: /reset-password");
             exit;
         } catch (Exception $e) {
-            $this->log($e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
+            $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
             $this->view('auth/forgot_password', [
                 'errors' => ['Something went wrong.'],
                 'success' => '',
@@ -354,7 +339,7 @@ class AuthController extends Controller
             $confirmPassword = trim($_POST['confirm_password'] ?? '');
 
             $validator = new ForgotValidation();
-            $errors    = $validator->validateReset($otp, $password, $confirmPassword);
+            $errors = $validator->validateReset($otp, $password, $confirmPassword);
 
             if (!empty($errors)) {
                 $this->view('auth/reset_password', [
@@ -388,10 +373,7 @@ class AuthController extends Controller
                 'success' => '',
             ]);
         } catch (Exception $e) {
-            $this->log($e->getMessage(), [
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
+            $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
             $this->view('auth/reset_password', [
                 'email' => $_POST['email'] ?? '',
                 'errors' => ['Something went wrong.'],

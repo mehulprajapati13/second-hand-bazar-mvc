@@ -91,18 +91,18 @@ class Router
 
     private function resolveController(string $controllerClass): object
     {
-        $authService      = new AuthService();
+        $authService = new AuthService();
         $dashboardService = new DashboardService();
-        $itemService      = new ItemService();
-        $browseService    = new BrowseService();
-        $requestService   = new RequestService();
+        $itemService = new ItemService();
+        $browseService = new BrowseService();
+        $requestService = new RequestService();
 
         return match ($controllerClass) {
             AuthController::class =>
                 new AuthController($authService),
 
             DashboardController::class =>
-                new DashboardController($dashboardService),
+                new DashboardController($dashboardService, $itemService),
 
             ItemController::class =>
                 new ItemController($itemService),
@@ -111,7 +111,7 @@ class Router
                 new BrowseController($browseService, $requestService),
 
             RequestController::class =>
-                new RequestController($requestService, $browseService),
+                new RequestController($requestService),
 
             default => new $controllerClass()
         };

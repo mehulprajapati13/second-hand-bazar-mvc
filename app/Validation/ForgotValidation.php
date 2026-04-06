@@ -26,17 +26,13 @@ class ForgotValidation
             }
 
             return [];
-
         } catch (ValidatorException $e) {
             return [$e->getMessage()];
         }
     }
 
-    public function validateReset(
-        string $otp,
-        string $password,
-        string $confirmPassword
-    ): array {
+    public function validateReset(string $otp, string $password, string $confirmPassword): array
+    {
         try {
             $data = [
                 'otp' => $otp,
@@ -46,8 +42,8 @@ class ForgotValidation
 
             $rules = [
                 'otp' => 'required|min:6|max:6',
-                'password' => 'required|min:6',
-                'confirm_password' => 'required|min:6',
+                'password' => 'required|min:8',
+                'confirm_password' => 'required|min:8',
             ];
 
             $messages = [
@@ -58,11 +54,11 @@ class ForgotValidation
                 ],
                 'password' => [
                     'required' => 'New password is required.',
-                    'min' => 'Password must be at least 6 characters.',
+                    'min' => 'Password must be at least 8 characters.',
                 ],
                 'confirm_password' => [
                     'required' => 'Please confirm your password.',
-                    'min' => 'Password must be at least 6 characters.',
+                    'min' => 'Password must be at least 8 characters.',
                 ],
             ];
 
@@ -77,7 +73,6 @@ class ForgotValidation
             }
 
             return [];
-
         } catch (ValidatorException $e) {
             return [$e->getMessage()];
         }
