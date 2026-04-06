@@ -48,7 +48,6 @@ class BrowseController extends Controller
 
         $this->view('browse/detail', [
             'item'        => $item,
-            'alreadySent' => false,
             'isOwner'     => $isOwner,
         ]);
     }

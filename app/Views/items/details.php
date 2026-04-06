@@ -123,40 +123,6 @@ $statusBadge = [
     </div>
 </div>
 
-<!-- Similar Items -->
-<?php if (!empty($similarItems)): ?>
-<div class="card">
-    <div class="card-header">
-        <div class="card-header-title">Similar Items</div>
-        <a href="/browse" class="btn btn-ghost btn-sm text-brand">See all →</a>
-    </div>
-    <div class="card-body-sm" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;">
-        <?php foreach (array_slice($similarItems, 0, 4) as $related): ?>
-        <article class="item-card">
-            <div class="item-img" style="height:130px;">
-                <?php if (!empty($related['image'])): ?>
-                    <img src="/uploads/items/<?= htmlspecialchars($related['image']) ?>"
-                         alt="<?= htmlspecialchars($related['title']) ?>" loading="lazy" />
-                <?php else: ?>
-                    <div class="no-img">
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    </div>
-                <?php endif; ?>
-            </div>
-            <div class="item-body">
-                <div class="item-title"><?= htmlspecialchars($related['title']) ?></div>
-                <div class="item-price">₹<?= number_format((float)$related['price'], 0) ?></div>
-                <div class="item-city"><?= htmlspecialchars($related['city']) ?></div>
-                <div class="item-actions">
-                    <a href="/items/view/<?= $related['id'] ?>" class="btn btn-primary btn-sm btn-block">View</a>
-                </div>
-            </div>
-        </article>
-        <?php endforeach; ?>
-    </div>
-</div>
-<?php endif; ?>
-
 <style>
 @media (max-width: 768px) {
     .detail-layout { grid-template-columns: 1fr !important; }

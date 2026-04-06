@@ -104,7 +104,7 @@ class ItemController extends Controller
         $items = $this->itemService->getMarketplaceItems($filters);
 
         $this->view('items/browse', [
-            'items'   => $items,
+            'items' => $items,
             'filters' => $filters,
         ]);
     }
@@ -120,14 +120,11 @@ class ItemController extends Controller
             exit;
         }
 
-        $similarItems = $this->itemService->getSimilarItems($item['mode'], $itemId);
         $isOwner = (int)$item['user_id'] === (int)$userId;
 
         $this->view('items/details', [
             'item' => $item,
-            'similarItems' => $similarItems,
             'isOwner' => $isOwner,
-            'alreadySent' => false,
         ]);
     }
 

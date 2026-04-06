@@ -138,23 +138,4 @@ class ItemService
         $result = $stmt->get_result()->fetch_assoc();
         return $result ?: null;
     }
-
-    public function getSimilarItems(string $mode, int $excludeId, int $limit = 4): array
-    {
-        $stmt = $this->conn->prepare(
-            "SELECT items.*, users.name AS seller_name, users.city AS seller_city
-             FROM items
-             JOIN users ON users.id = items.user_id
-             WHERE items.deleted_at IS NULL
-               AND items.status = 'active'
-               AND items.mode = ?
-               AND items.id <> ?
-             ORDER BY items.created_at DESC
-             LIMIT ?"
-        );
-
-        $stmt->bind_param("sii", $mode, $excludeId, $limit);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    }
 }
