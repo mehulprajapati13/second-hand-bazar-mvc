@@ -5,15 +5,17 @@ namespace Vendor\App\Controllers;
 use Vendor\App\Core\Controller;
 use Vendor\App\Services\DashboardService;
 use Vendor\App\Services\ItemService;
+use Vendor\App\Services\RequestService;
 class DashboardController extends Controller
 {
     private DashboardService $dashboardService;
     private ItemService $itemService;
-
-    public function __construct(DashboardService $dashboardService,ItemService $itemService)
+    private RequestService $requestService;
+    public function __construct(DashboardService $dashboardService,ItemService $itemService,RequestService $requestService)
     {
         $this->dashboardService = $dashboardService;
         $this->itemService = $itemService;
+        $this->requestService =  new RequestService();
     }
 
     public function index(): void
@@ -74,5 +76,20 @@ class DashboardController extends Controller
     
         header("Location: /profile");
         exit;
+    }
+
+    public function requests()
+    {
+        $userId = (int)$_SESSION['user']['id'];
+        $tab = $_GET['tab'] ?? 'received';
+
+        $received = $this->requestService->getReceivedRequests($userId);
+        $sent = $this->requestService->getSentRequests($userId);
+
+        $this->view('dashboard/requests', [
+            'received' => $received,
+            'sent' => $sent,
+            'tab' => $tab,
+        ]);
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use Vendor\App\Controllers\AdminController;
 use Vendor\App\Facade\Route;
 
 //Guest routes 
@@ -20,6 +21,9 @@ Route::middleware('isGuest')->post('/reset-password', 'AuthController@resetPassw
 Route::middleware('isAuth')->get('/logout', 'AuthController@logout');
 Route::middleware('isAuth')->get('/dashboard', 'DashboardController@index');
 Route::middleware('isAuth')->get('/profile', 'DashboardController@profile');
+Route::middleware('isAuth')->post('/profile/update', 'DashboardController@updateprofile');
+
+Route::middleware('isAuth')->get('/requests',  'DashboardController@requests');
 
 //Item routes
 Route::middleware('isAuth')->get('/browse', 'ItemController@browse');
@@ -31,5 +35,19 @@ Route::middleware('isAuth')->post('/items/edit/{id}', 'ItemController@edit');
 Route::middleware('isAuth')->get('/items/view/{id}', 'ItemController@showDetails');
 Route::middleware('isAuth')->post('/items/delete/{id}','ItemController@delete');
 
-// ── Profile update ──
-Route::middleware('isAuth')->post('/profile/update', 'DashboardController@updateProfile');
+//Request Routes
+Route::middleware('isAuth')->post('/requests/send', 'RequestController@send');
+Route::middleware('isAuth')->post('/requests/approve/{id}', 'RequestController@approve');
+Route::middleware('isAuth')->post('/requests/reject/{id}', 'RequestController@reject');
+Route::middleware('isAuth')->post('/requests/sold/{id}', 'RequestController@markSold');
+Route::middleware('isAuth')->post('/requests/returned/{id}', 'RequestController@markReturned');
+Route::middleware('isAuth')->post('/requests/cancel/{id}', 'RequestController@cancel');
+
+//Admin Routes
+Route::middleware('isAdmin')->get('/admin', 'AdminController@index');
+Route::middleware('isAdmin')->get('/admin/dashboard', 'AdminController@users');
+Route::middleware('isAdmin')->get('/admin/items', 'AdminController@items');
+Route::middleware('isAdmin')->post('/admin/users/delete/{id}', 'AdminController@deleteUser');
+Route::middleware('isAdmin')->post('/admin/items/delete/{id}', 'AdminController@deleteItem');
+Route::middleware('isAdmin')->get('/admin/users/edit/{id}', 'AdminController@showEditUser');
+Route::middleware('isAdmin')->post('/admin/users/edit/{id}', 'AdminController@editUser');

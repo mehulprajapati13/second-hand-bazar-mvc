@@ -37,11 +37,13 @@ $statusBadge = [
         <div style="background:var(--bg-muted);min-height:320px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
             <?php if (!empty($image)): ?>
                 <img src="/uploads/items/<?= htmlspecialchars((string)$image) ?>"
-                     alt="<?= htmlspecialchars($title) ?>"
-                     style="width:100%;height:100%;object-fit:cover;min-height:320px;" />
+                    alt="<?= htmlspecialchars($title) ?>"
+                    style="width:100%;height:100%;object-fit:cover;min-height:320px;" />
             <?php else: ?>
                 <div style="display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--text-muted);padding:48px;">
-                    <svg width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <svg width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
                     <span style="font-size:.875rem;color:var(--text-muted);">No image available</span>
                 </div>
             <?php endif; ?>
@@ -97,25 +99,63 @@ $statusBadge = [
             <!-- Action Area -->
             <div>
                 <?php $isActive = $status === 'active'; ?>
+
                 <?php if ($isOwner): ?>
+                    <!-- Owner sees edit link -->
                     <div class="alert alert-blue" style="flex-direction:column;gap:8px;text-align:center;">
                         <span>This is your listing.</span>
-                        <a href="/items/edit/<?= $itemId ?>" class="btn btn-primary btn-sm" style="align-self:center;">Edit Item</a>
+                        <a href="/items/edit/<?= $itemId ?>" class="btn btn-primary btn-sm" style="align-self:center;">
+                            Edit Item
+                        </a>
                     </div>
 
                 <?php elseif (!$isActive): ?>
+                    <!-- Item sold/reserved -->
                     <div class="alert" style="background:var(--bg-muted);border-color:var(--border);color:var(--text-muted);justify-content:center;">
                         This item is no longer available.
                     </div>
 
-                <?php else: ?>
-                    <div class="alert alert-orange" style="flex-direction:column;text-align:center;gap:4px;">
-                        <strong>Interested in this item?</strong>
-                        <span style="font-size:.8125rem;">Contact the seller: <strong><?= htmlspecialchars($sellerName) ?></strong></span>
+                <?php elseif (!empty($alreadySent)): ?>
+                    <!-- Already sent a request -->
+                    <div class="alert alert-green" style="flex-direction:column;gap:6px;text-align:center;">
+                        <strong>✓ Request already sent.</strong>
+                        <span style="font-size:.8125rem;">Waiting for the seller to respond.</span>
+                        <a href="/requests?tab=sent" style="font-size:.8125rem;color:var(--brand);font-weight:600;">
+                            View my requests →
+                        </a>
                     </div>
+
+                <?php else: ?>
+                    <!-- Send Request form -->
+                    <?php if (isset($_GET['success']) && $_GET['success'] === 'request_sent'): ?>
+                        <div class="alert alert-green" style="margin-bottom:12px;">
+                            ✓ Request sent! Waiting for seller to respond.
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (isset($_GET['error'])): ?>
+                        <?php $errMap = ['already_sent' => 'You already sent a request for this item.', 'unavailable' => 'This item is no longer available.']; ?>
+                        <div class="alert alert-red" style="margin-bottom:12px;">
+                            <?= htmlspecialchars($errMap[$_GET['error']] ?? 'Something went wrong.') ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form action="/requests/send" method="POST">
+                        <input type="hidden" name="item_id" value="<?= $itemId ?>" />
+                        <input type="hidden" name="owner_id" value="<?= $item['user_id'] ?>" />
+                        <button type="submit" class="btn btn-primary w-100" style="padding:12px;font-size:1rem;">
+                            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                                style="width:18px;height:18px;display:inline;margin-right:6px;vertical-align:middle;">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                            Send <?= $mode === 'rent' ? 'Rent' : 'Buy' ?> Request
+                        </button>
+                    </form>
+
                 <?php endif; ?>
 
-                <a href="/browse" style="display:block;text-align:center;font-size:.8125rem;color:var(--text-muted);margin-top:12px;transition:color .12s;">
+                <a href="/browse" style="display:block;text-align:center;font-size:.8125rem;color:var(--text-muted);margin-top:12px;">
                     ← Back to Browse
                 </a>
             </div>
@@ -124,9 +164,11 @@ $statusBadge = [
 </div>
 
 <style>
-@media (max-width: 768px) {
-    .detail-layout { grid-template-columns: 1fr !important; }
-}
+    @media (max-width: 768px) {
+        .detail-layout {
+            grid-template-columns: 1fr !important;
+        }
+    }
 </style>
 
 <?php require __DIR__ . '/../includes/dashboard-footer.php'; ?>

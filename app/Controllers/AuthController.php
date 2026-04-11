@@ -249,7 +249,13 @@ class AuthController extends Controller
                 'email' => $result['email'],
                 'city' => $result['city'],
                 'phone' => $result['phone'],
+                'role' => $result['role'],  
             ];
+
+            if (($_SESSION['user']['role'] ?? '') === 'admin') {
+                header("Location: /admin/dashboard");
+                exit;
+            }
 
             header("Location: /dashboard");
             exit;

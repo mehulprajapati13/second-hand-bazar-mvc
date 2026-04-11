@@ -2,6 +2,7 @@
 
 namespace Vendor\App\Core;
 
+use Vendor\App\Controllers\AdminController;
 use Vendor\App\Controllers\AuthController;
 use Vendor\App\Controllers\BrowseController;
 use Vendor\App\Controllers\DashboardController;
@@ -12,6 +13,7 @@ use Vendor\App\Services\DashboardService;
 use Vendor\App\Services\ItemService;
 use Vendor\App\Services\BrowseService;
 use Vendor\App\Services\RequestService;
+use Vendor\App\Services\AdminService;
 
 class Router
 {
@@ -92,17 +94,19 @@ class Router
     private function resolveController(string $controllerClass): object
     {
         $authService = new AuthService();
+        $adminService = new AdminService();
         $dashboardService = new DashboardService();
         $itemService = new ItemService();
         $browseService = new BrowseService();
         $requestService = new RequestService();
+        
 
         return match ($controllerClass) {
             AuthController::class =>
                 new AuthController($authService),
 
             DashboardController::class =>
-                new DashboardController($dashboardService, $itemService),
+                new DashboardController($dashboardService, $itemService, $requestService),
 
             ItemController::class =>
                 new ItemController($itemService),
@@ -112,6 +116,9 @@ class Router
 
             RequestController::class =>
                 new RequestController($requestService),
+
+            AdminController::class =>
+                new AdminController($adminService),
 
             default => new $controllerClass()
         };

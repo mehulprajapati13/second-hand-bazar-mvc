@@ -112,19 +112,22 @@ class ItemController extends Controller
     public function showDetails(string $id): void
     {
         $itemId = (int)$id;
-        $userId = $_SESSION['user']['id'];
-        $item = $this->itemService->getMarketplaceItemWithSeller($itemId);
+        $userId = (int)$_SESSION['user']['id'];
+        $item   = $this->itemService->getMarketplaceItemWithSeller($itemId);
 
         if (!$item) {
             header("Location: /browse");
             exit;
         }
 
-        $isOwner = (int)$item['user_id'] === (int)$userId;
+        $isOwner = (int)$item['user_id'] === $userId;
+        $requestService = new \Vendor\App\Services\RequestService();
+        $alreadySent    = $isOwner ? false : $requestService->alreadySentRequest($itemId, $userId);
 
         $this->view('items/details', [
-            'item' => $item,
-            'isOwner' => $isOwner,
+            'item'         => $item,
+            'isOwner'      => $isOwner,
+            'alreadySent'  => $alreadySent,
         ]);
     }
 

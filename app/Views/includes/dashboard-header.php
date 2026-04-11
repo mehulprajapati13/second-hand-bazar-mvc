@@ -110,6 +110,21 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                     <a href="/items/add" class="btn btn-brand d-none d-sm-inline-flex">
                         <i class="bi bi-plus-lg me-1"></i> List Item
                     </a>
+                    <!-- Admin Panel link — only shows for admin users -->
+                    <?php if (($_SESSION['user']['role'] ?? '') === 'admin'): ?>
+                        <li>
+                            <a class="dropdown-item fw-bold" href="/admin/dashboard"
+                                style="color:#f97316;">
+                                <i class="bi bi-shield-check me-2"></i>Admin Panel
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                    <?php endif; ?>
+                    <li><a class="dropdown-item text-danger" href="/logout">
+                            <i class="bi bi-box-arrow-right me-2"></i>Logout
+                        </a></li>
 
                     <!-- User Dropdown -->
                     <div class="dropdown">
