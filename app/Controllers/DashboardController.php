@@ -15,7 +15,7 @@ class DashboardController extends Controller
     {
         $this->dashboardService = $dashboardService;
         $this->itemService = $itemService;
-        $this->requestService =  new RequestService();
+        $this->requestService = $requestService;
     }
 
     public function index(): void

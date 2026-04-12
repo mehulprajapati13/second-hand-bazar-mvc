@@ -5,11 +5,13 @@ require __DIR__ . '/../includes/dashboard-header.php';
 $itemId      = (int)($item['id']          ?? 0);
 $title       = (string)($item['title']    ?? 'Untitled item');
 $image       = $item['image']             ?? null;
-$status      = strtolower((string)($item['status']   ?? 'active'));
-$mode        = strtolower((string)($item['mode']     ?? 'sell'));
+$status      = strtolower((string)($item['status']      ?? 'active'));
+$mode        = strtolower((string)($item['mode']        ?? 'sell'));
 $price       = (float)($item['price']     ?? 0);
 $city        = (string)($item['city']     ?? 'Unknown');
-$sellerName  = (string)($item['seller_name'] ?? 'Seller');
+$sellerName  = (string)($item['seller_name']  ?? 'Seller');
+$sellerPhone = (string)($item['seller_phone'] ?? '');
+$sellerEmail = (string)($item['seller_email'] ?? '');
 $description = (string)($item['description'] ?? 'No description provided.');
 $listedOn    = !empty($item['created_at']) ? date('d M Y', strtotime($item['created_at'])) : 'N/A';
 
@@ -19,6 +21,8 @@ $statusBadge = [
     'reserved' => 'badge-yellow',
     'returned' => 'badge-blue',
 ][$status] ?? 'badge-gray';
+
+$isActive = $status === 'active';
 ?>
 
 <!-- Breadcrumb -->
@@ -27,12 +31,27 @@ $statusBadge = [
     <span class="sep">/</span>
     <a href="/browse">Browse</a>
     <span class="sep">/</span>
-    <span class="current truncate" style="max-width:150px;"><?= htmlspecialchars($title) ?></span>
+    <span class="current"><?= htmlspecialchars($title) ?></span>
 </div>
+
+<!-- Success / Error Messages -->
+<?php if (isset($_GET['success']) && $_GET['success'] === 'request_sent'): ?>
+    <div class="alert alert-green mb-4">
+        ✓ Request sent successfully! Waiting for seller to respond.
+    </div>
+<?php endif; ?>
+
+<?php if (isset($_GET['error'])): ?>
+    <?php $errMap = ['already_sent' => 'You already sent a request for this item.', 'unavailable' => 'This item is no longer available.']; ?>
+    <div class="alert alert-red mb-4">
+        <?= htmlspecialchars($errMap[$_GET['error']] ?? 'Something went wrong.') ?>
+    </div>
+<?php endif; ?>
 
 <!-- Detail Card -->
 <div class="card mb-4">
     <div style="display:grid;grid-template-columns:1fr 1fr;" class="detail-layout">
+
         <!-- Image -->
         <div style="background:var(--bg-muted);min-height:320px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
             <?php if (!empty($image)): ?>
@@ -42,15 +61,17 @@ $statusBadge = [
             <?php else: ?>
                 <div style="display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--text-muted);padding:48px;">
                     <svg width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <span style="font-size:.875rem;color:var(--text-muted);">No image available</span>
+                    <span style="font-size:.875rem;">No image available</span>
                 </div>
             <?php endif; ?>
         </div>
 
         <!-- Info Panel -->
         <div style="padding:28px;display:flex;flex-direction:column;gap:18px;">
+
             <!-- Badges -->
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
                 <span class="badge <?= $statusBadge ?>"><?= ucfirst($status) ?></span>
@@ -72,7 +93,7 @@ $statusBadge = [
                 </div>
             </div>
 
-            <!-- Details grid -->
+            <!-- Details -->
             <div class="detail-grid">
                 <div class="detail-cell">
                     <div class="detail-cell-label">Location</div>
@@ -96,73 +117,65 @@ $statusBadge = [
                 </p>
             </div>
 
-            <!-- Action Area -->
+            <!-- ── ACTION AREA ── -->
             <div>
-                <?php $isActive = $status === 'active'; ?>
 
                 <?php if ($isOwner): ?>
-                    <!-- Owner sees edit link -->
+                    <!-- Owner: show edit link only -->
                     <div class="alert alert-blue" style="flex-direction:column;gap:8px;text-align:center;">
-                        <span>This is your listing.</span>
+                        <span style="font-weight:600;">This is your listing.</span>
                         <a href="/items/edit/<?= $itemId ?>" class="btn btn-primary btn-sm" style="align-self:center;">
                             Edit Item
                         </a>
                     </div>
 
                 <?php elseif (!$isActive): ?>
-                    <!-- Item sold/reserved -->
+                    <!-- Item not available -->
                     <div class="alert" style="background:var(--bg-muted);border-color:var(--border);color:var(--text-muted);justify-content:center;">
                         This item is no longer available.
                     </div>
 
                 <?php elseif (!empty($alreadySent)): ?>
-                    <!-- Already sent a request -->
+                    <!-- Already sent a request — show waiting message -->
                     <div class="alert alert-green" style="flex-direction:column;gap:6px;text-align:center;">
                         <strong>✓ Request already sent.</strong>
                         <span style="font-size:.8125rem;">Waiting for the seller to respond.</span>
-                        <a href="/requests?tab=sent" style="font-size:.8125rem;color:var(--brand);font-weight:600;">
+                        <a href="/requests?tab=sent"
+                            style="font-size:.8125rem;font-weight:600;color:var(--brand,#f97316);">
                             View my requests →
                         </a>
                     </div>
 
                 <?php else: ?>
-                    <!-- Send Request form -->
-                    <?php if (isset($_GET['success']) && $_GET['success'] === 'request_sent'): ?>
-                        <div class="alert alert-green" style="margin-bottom:12px;">
-                            ✓ Request sent! Waiting for seller to respond.
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if (isset($_GET['error'])): ?>
-                        <?php $errMap = ['already_sent' => 'You already sent a request for this item.', 'unavailable' => 'This item is no longer available.']; ?>
-                        <div class="alert alert-red" style="margin-bottom:12px;">
-                            <?= htmlspecialchars($errMap[$_GET['error']] ?? 'Something went wrong.') ?>
-                        </div>
-                    <?php endif; ?>
-
+                    <!-- Send Request Button -->
                     <form action="/requests/send" method="POST">
                         <input type="hidden" name="item_id" value="<?= $itemId ?>" />
                         <input type="hidden" name="owner_id" value="<?= $item['user_id'] ?>" />
-                        <button type="submit" class="btn btn-primary w-100" style="padding:12px;font-size:1rem;">
+                        <button type="submit" class="btn btn-primary w-100"
+                            style="padding:12px;font-size:1rem;font-weight:700;">
                             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-                                style="width:18px;height:18px;display:inline;margin-right:6px;vertical-align:middle;">
+                                style="width:18px;height:18px;display:inline;vertical-align:middle;margin-right:6px;">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                             </svg>
                             Send <?= $mode === 'rent' ? 'Rent' : 'Buy' ?> Request
                         </button>
                     </form>
+                    <p style="font-size:.75rem;color:var(--text-muted);text-align:center;margin-top:8px;">
+                        The seller will review your request and contact you if approved.
+                    </p>
 
                 <?php endif; ?>
 
-                <a href="/browse" style="display:block;text-align:center;font-size:.8125rem;color:var(--text-muted);margin-top:12px;">
+                <a href="/browse"
+                    style="display:block;text-align:center;font-size:.8125rem;color:var(--text-muted);margin-top:12px;">
                     ← Back to Browse
                 </a>
             </div>
+
         </div>
     </div>
 </div>
-
 <style>
     @media (max-width: 768px) {
         .detail-layout {

@@ -5,6 +5,7 @@ namespace Vendor\App\Controllers;
 use Vendor\App\Core\Controller;
 use Vendor\App\Services\ItemService;
 use Vendor\App\Validation\ItemValidation;
+use Vendor\App\Services\RequestService;
 
 class ItemController extends Controller
 {
@@ -64,6 +65,7 @@ class ItemController extends Controller
         if ($saved) {
             $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Item listed successfully.'];
             header("Location: /items");
+            exit;
         }
 
         $this->view('items/add', [
@@ -113,7 +115,7 @@ class ItemController extends Controller
     {
         $itemId = (int)$id;
         $userId = (int)$_SESSION['user']['id'];
-        $item   = $this->itemService->getMarketplaceItemWithSeller($itemId);
+        $item = $this->itemService->getMarketplaceItemWithSeller($itemId);
 
         if (!$item) {
             header("Location: /browse");
@@ -121,13 +123,16 @@ class ItemController extends Controller
         }
 
         $isOwner = (int)$item['user_id'] === $userId;
-        $requestService = new \Vendor\App\Services\RequestService();
-        $alreadySent    = $isOwner ? false : $requestService->alreadySentRequest($itemId, $userId);
+        $alreadySent = false;
+        if (!$isOwner) {
+            $requestService = new RequestService();
+            $alreadySent = $requestService->alreadySentRequest($itemId, $userId);
+        }
 
         $this->view('items/details', [
-            'item'         => $item,
-            'isOwner'      => $isOwner,
-            'alreadySent'  => $alreadySent,
+            'item' => $item,
+            'isOwner' => $isOwner,
+            'alreadySent' => $alreadySent,
         ]);
     }
 
@@ -205,6 +210,7 @@ class ItemController extends Controller
         if ($updated) {
             $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Item updated successfully.'];
             header("Location: /items");
+            exit;
         }
 
         $this->view('items/edit', [

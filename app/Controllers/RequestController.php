@@ -15,25 +15,25 @@ class RequestController extends Controller
         $this->requestService = $requestService;
     }
 
-    public function send() 
+    public function send()
     {
         $userId = (int)$_SESSION['user']['id'];
-        $itemId = (int)$_POST['item_id'];
-        $ownerId = (int)$_POST['owner_id'];
+        $itemId = (int)($_POST['item_id']  ?? 0);
+        $ownerId = (int)($_POST['owner_id'] ?? 0);
 
-        if($ownerId == $userId) {
+        if ($ownerId == $userId) {
             header("Location: /item/view/{$itemId}");
             exit;
         }
 
-        if($this->requestService->alreadySentRequest($itemId, $userId)) {
+        if ($this->requestService->alreadySentRequest($itemId, $userId)) {
             header("Location: /items/view/{$itemId}?error=already_sent");
             exit;
         }
 
         $sent = $this->requestService->sendRequest($itemId, $userId, $ownerId);
 
-        if($sent) {
+        if ($sent) {
             header("Location: /items/view/{$itemId}?success=request_sent");
         } else {
             header("Location: /items/view/{$itemId}?error=unavailable");
@@ -41,7 +41,7 @@ class RequestController extends Controller
         exit;
     }
 
-    public function approve(string $id) 
+    public function approve(string $id)
     {
         $this->requestService->approveRequest((int)$id, (int)$_SESSION['user']['id']);
         $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Request approved, Item is now reserved'];
@@ -49,7 +49,7 @@ class RequestController extends Controller
         exit;
     }
 
-    public function reject(string $id) 
+    public function reject(string $id)
     {
         $this->requestService->rejectRequest((int)$id, (int)$_SESSION['user']['id']);
         $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Request rejected'];
@@ -57,7 +57,7 @@ class RequestController extends Controller
         exit;
     }
 
-    public function markSold(string $id) 
+    public function markSold(string $id)
     {
         $this->requestService->markSold((int)$id, (int)$_SESSION['user']['id']);
         $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Item marked as sold'];
@@ -65,17 +65,17 @@ class RequestController extends Controller
         exit;
     }
 
-    public function markReturned(string $id) 
+    public function markReturned(string $id)
     {
         $this->requestService->markReturned((int)$id, (int)$_SESSION['user']['id']);
-        $_SESSION['flash'] = ['type' => 'success', 'msg' =>"Item marked as returned"];
+        $_SESSION['flash'] = ['type' => 'success', 'msg' => "Item marked as returned"];
         header("Location: /requests?tab=received");
         exit;
     }
 
-    public function cancel(string $id) 
+    public function cancel(string $id)
     {
-        $this->requestService->cancelrequest((int)$id, (int)$_SESSION['user']['id']);
+        $this->requestService->cancelRequest((int)$id, (int)$_SESSION['user']['id']);
         $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Request Cancelled'];
         header("Location: /requests?tab=sent");
         exit;
