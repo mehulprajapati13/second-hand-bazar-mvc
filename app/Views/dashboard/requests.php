@@ -28,7 +28,7 @@ require __DIR__ . '/../includes/dashboard-header.php';
                 <?= $pendingCount ?>
             </span>
         <?php endif; ?>
-    </a>
+    </a>=
     <a href="/requests?tab=sent"
         style="padding:10px 20px;font-size:0.875rem;font-weight:600;text-decoration:none;
               border-bottom:<?= $tab === 'sent' ? '2px solid #f97316' : '2px solid transparent' ?>;
