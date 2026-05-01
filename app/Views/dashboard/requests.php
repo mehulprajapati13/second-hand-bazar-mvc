@@ -1,293 +1,294 @@
 <?php
 $pageTitle = 'Requests';
-require __DIR__ . '/../includes/dashboard-header.php';
-?>
+require __DIR__ . '/../includes/head.php';
+require __DIR__ . '/../includes/navigation.php';
 
-<div class="breadcrumb">
-    <a href="/dashboard">Home</a>
-    <span class="sep">/</span>
-    <span class="current">Requests</span>
-</div>
-
-<div style="margin-bottom:16px;">
-    <h1 style="font-size:1.25rem;font-weight:700;color:var(--text-primary);">Requests</h1>
-    <p class="text-sm text-muted mt-1">Manage your incoming and outgoing buy/rent requests</p>
-</div>
-
-<!-- Tabs -->
-<div style="display:flex;gap:0;border-bottom:2px solid #e2e8f0;margin-bottom:20px;">
-    <a href="/requests?tab=received"
-        style="padding:10px 20px;font-size:0.875rem;font-weight:600;text-decoration:none;
-              border-bottom:<?= $tab === 'received' ? '2px solid #f97316' : '2px solid transparent' ?>;
-              color:<?= $tab === 'received' ? '#f97316' : '#64748b' ?>;margin-bottom:-2px;">
-        Received
-        <?php $pendingCount = count(array_filter($received, fn($r) => $r['status'] === 'pending')); ?>
-        <?php if ($pendingCount > 0): ?>
-            <span style="background:#ef4444;color:#fff;font-size:10px;font-weight:700;
-                     padding:2px 7px;border-radius:20px;margin-left:6px;">
-                <?= $pendingCount ?>
-            </span>
-        <?php endif; ?>
-    </a>=
-    <a href="/requests?tab=sent"
-        style="padding:10px 20px;font-size:0.875rem;font-weight:600;text-decoration:none;
-              border-bottom:<?= $tab === 'sent' ? '2px solid #f97316' : '2px solid transparent' ?>;
-              color:<?= $tab === 'sent' ? '#f97316' : '#64748b' ?>;margin-bottom:-2px;">
-        Sent
-    </a>
-</div>
-
-<?php
 // Status badge helper
 function statusBadge(string $status): array
 {
     return match ($status) {
-        'pending'   => ['bg' => '#fef3c7', 'color' => '#92400e', 'text' => 'Pending'],
-        'approved'  => ['bg' => '#d1fae5', 'color' => '#065f46', 'text' => 'Approved'],
-        'rejected'  => ['bg' => '#fee2e2', 'color' => '#991b1b', 'text' => 'Rejected'],
-        'completed' => ['bg' => '#dbeafe', 'color' => '#1e40af', 'text' => 'Completed'],
-        'cancelled' => ['bg' => '#f1f5f9', 'color' => '#475569', 'text' => 'Cancelled'],
-        default     => ['bg' => '#f1f5f9', 'color' => '#475569', 'text' => ucfirst($status)],
+        'pending'   => ['bg' => 'bg-amber-50', 'color' => 'text-amber-600', 'border' => 'border-amber-200', 'text' => 'Pending', 'icon' => 'bi-clock-history'],
+        'approved'  => ['bg' => 'bg-emerald-50', 'color' => 'text-emerald-600', 'border' => 'border-emerald-200', 'text' => 'Approved', 'icon' => 'bi-check-circle-fill'],
+        'rejected'  => ['bg' => 'bg-rose-50', 'color' => 'text-rose-600', 'border' => 'border-rose-200', 'text' => 'Rejected', 'icon' => 'bi-x-circle-fill'],
+        'completed' => ['bg' => 'bg-blue-50', 'color' => 'text-blue-600', 'border' => 'border-blue-200', 'text' => 'Completed', 'icon' => 'bi-check2-all'],
+        'cancelled' => ['bg' => 'bg-gray-100', 'color' => 'text-gray-600', 'border' => 'border-gray-200', 'text' => 'Cancelled', 'icon' => 'bi-dash-circle-fill'],
+        default     => ['bg' => 'bg-gray-100', 'color' => 'text-gray-600', 'border' => 'border-gray-200', 'text' => ucfirst($status), 'icon' => 'bi-circle-fill'],
     };
 }
 ?>
 
-<!-- ═══════════════ RECEIVED TAB ═══════════════ -->
-<?php if ($tab === 'received'): ?>
-
-    <?php if (empty($received)): ?>
-        <div class="card">
-            <div class="empty-state">
-                <div class="icon">📭</div>
-                <div class="title">No requests received yet</div>
-                <div class="desc">When buyers request your items, they appear here</div>
+<div class="bg-gray-50/50 min-h-[calc(100vh-72px)] py-8 font-sans">
+    <div class="container mx-auto px-4 lg:px-8 max-w-7xl">
+        <div class="row g-6">
+            <!-- Sidebar -->
+            <div class="col-lg-3 transition-all duration-300">
+                <?php require __DIR__ . '/../includes/account-sidebar.php'; ?>
             </div>
-        </div>
-    <?php else: ?>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-            <?php foreach ($received as $req):
-                $badge = statusBadge($req['status']);
-            ?>
-                <div class="card" style="padding:16px;">
-                    <div style="display:flex;align-items:flex-start;gap:14px;">
 
-                        <!-- Item image -->
-                        <div style="width:64px;height:56px;border-radius:8px;overflow:hidden;background:#f1f5f9;flex-shrink:0;">
-                            <?php if (!empty($req['item_image'])): ?>
-                                <img src="/uploads/items/<?= htmlspecialchars($req['item_image']) ?>"
-                                    style="width:100%;height:100%;object-fit:cover;">
-                            <?php else: ?>
-                                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#94a3b8;">
-                                    <i class="bi bi-image"></i>
-                                </div>
-                            <?php endif; ?>
-                        </div>
+            <!-- Main Content -->
+            <div class="col-lg-9 transition-all duration-300">
+                
+                <div class="flex items-center gap-2 text-sm font-medium text-gray-500 mb-6">
+                    <a href="/dashboard" class="text-orange-500 hover:text-orange-600 no-underline">Home</a>
+                    <i class="bi bi-chevron-right text-[10px]"></i>
+                    <span class="text-gray-900">Requests</span>
+                </div>
 
-                        <div style="flex:1;min-width:0;">
-                            <!-- Header row -->
-                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-                                <div>
-                                    <div style="font-weight:600;font-size:0.9rem;">
-                                        <?= htmlspecialchars($req['item_title']) ?>
-                                        <span style="font-size:.75rem;font-weight:400;color:#64748b;margin-left:6px;">
-                                            (<?= ucfirst($req['item_mode']) ?>)
-                                        </span>
-                                    </div>
-                                    <div style="font-size:0.8rem;color:#64748b;margin-top:2px;">
-                                        From: <strong><?= htmlspecialchars($req['requester_name']) ?></strong>
-                                        · <?= date('d M Y', strtotime($req['created_at'])) ?>
-                                    </div>
-                                </div>
-                                <span style="background:<?= $badge['bg'] ?>;color:<?= $badge['color'] ?>;
-                                     font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;">
-                                    <?= $badge['text'] ?>
-                                </span>
-                            </div>
-
-                            <!-- APPROVED: Show buyer contact info so seller can arrange handover -->
-                            <?php if ($req['status'] === 'approved'): ?>
-                                <div style="margin-top:12px;padding:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;">
-                                    <div style="font-size:.8rem;font-weight:700;color:#15803d;margin-bottom:8px;">
-                                        ✓ Approved — Contact buyer to arrange handover
-                                    </div>
-                                    <div style="display:flex;flex-wrap:wrap;gap:12px;">
-                                        <?php if (!empty($req['requester_phone'])): ?>
-                                            <a href="tel:<?= htmlspecialchars($req['requester_phone']) ?>"
-                                                style="display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;font-weight:600;color:#15803d;text-decoration:none;background:#dcfce7;padding:6px 12px;border-radius:6px;border:1px solid #bbf7d0;">
-                                                <i class="bi bi-telephone-fill"></i>
-                                                <?= htmlspecialchars($req['requester_phone']) ?>
-                                            </a>
-                                        <?php endif; ?>
-                                        <?php if (!empty($req['requester_email'])): ?>
-                                            <a href="mailto:<?= htmlspecialchars($req['requester_email']) ?>"
-                                                style="display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;font-weight:600;color:#1d4ed8;text-decoration:none;background:#eff6ff;padding:6px 12px;border-radius:6px;border:1px solid #bfdbfe;">
-                                                <i class="bi bi-envelope-fill"></i>
-                                                <?= htmlspecialchars($req['requester_email']) ?>
-                                            </a>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-
-                            <!-- Action buttons -->
-                            <?php if ($req['status'] === 'pending'): ?>
-                                <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-                                    <form action="/requests/approve/<?= $req['id'] ?>" method="POST">
-                                        <button type="submit"
-                                            style="background:#16a34a;color:#fff;border:none;padding:6px 16px;border-radius:6px;font-weight:600;font-size:.875rem;cursor:pointer;">
-                                            ✓ Approve
-                                        </button>
-                                    </form>
-                                    <form action="/requests/reject/<?= $req['id'] ?>" method="POST">
-                                        <button type="submit"
-                                            style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:6px 16px;border-radius:6px;font-weight:600;font-size:.875rem;cursor:pointer;">
-                                            ✗ Reject
-                                        </button>
-                                    </form>
-                                </div>
-
-                            <?php elseif ($req['status'] === 'approved'): ?>
-                                <div style="margin-top:10px;">
-                                    <?php if ($req['item_mode'] === 'sell'): ?>
-                                        <form action="/requests/sold/<?= $req['id'] ?>" method="POST"
-                                            onsubmit="return confirm('Mark as sold after physical handover?')">
-                                            <button type="submit"
-                                                style="background:#1d4ed8;color:#fff;border:none;padding:6px 16px;border-radius:6px;font-weight:600;font-size:.875rem;cursor:pointer;">
-                                                Mark as Sold
-                                            </button>
-                                        </form>
-                                    <?php else: ?>
-                                        <form action="/requests/returned/<?= $req['id'] ?>" method="POST"
-                                            onsubmit="return confirm('Mark item as returned?')">
-                                            <button type="submit"
-                                                style="background:#7c3aed;color:#fff;border:none;padding:6px 16px;border-radius:6px;font-weight:600;font-size:.875rem;cursor:pointer;">
-                                                Mark as Returned
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endif; ?>
-
-                        </div>
+                <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight m-0 mb-1">Requests</h1>
+                        <p class="text-gray-500 font-medium m-0">Manage your incoming and outgoing buy/rent requests</p>
                     </div>
                 </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
 
-<?php endif; ?>
+                <!-- Tabs -->
+                <div class="flex gap-4 border-b border-gray-200 mb-6">
+                    <a href="/requests?tab=received" class="relative px-4 py-3 font-bold text-sm transition-colors no-underline flex items-center gap-2 <?= $tab === 'received' ? 'text-orange-600 border-b-2 border-orange-500' : 'text-gray-500 hover:text-gray-700' ?>">
+                        <i class="bi bi-inbox-fill text-lg"></i> Received
+                        <?php $pendingCount = count(array_filter($received, fn($r) => $r['status'] === 'pending')); ?>
+                        <?php if ($pendingCount > 0): ?>
+                            <span class="bg-orange-500 text-white text-[10px] px-2 py-0.5 rounded-full"><?= $pendingCount ?></span>
+                        <?php endif; ?>
+                    </a>
+                    <a href="/requests?tab=sent" class="relative px-4 py-3 font-bold text-sm transition-colors no-underline flex items-center gap-2 <?= $tab === 'sent' ? 'text-orange-600 border-b-2 border-orange-500' : 'text-gray-500 hover:text-gray-700' ?>">
+                        <i class="bi bi-send-fill text-lg"></i> Sent
+                    </a>
+                </div>
 
-<!-- ═══════════════ SENT TAB ═══════════════ -->
-<?php if ($tab === 'sent'): ?>
+                <!-- ═══════════════ RECEIVED TAB ═══════════════ -->
+                <?php if ($tab === 'received'): ?>
 
-    <?php if (empty($sent)): ?>
-        <div class="card">
-            <div class="empty-state">
-                <div class="icon">📤</div>
-                <div class="title">No requests sent yet</div>
-                <div class="desc">Browse items and send a request to get started</div>
-                <a href="/browse" class="btn btn-primary mt-4">Browse Items</a>
+                    <?php if (empty($received)): ?>
+                        <div class="bg-white rounded-2xl border border-dashed border-gray-200 p-12 text-center shadow-sm">
+                            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                                <i class="bi bi-inbox text-4xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">No requests received yet</h3>
+                            <p class="text-gray-500 max-w-sm mx-auto mb-0">When buyers request your items, they will appear here.</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="grid grid-cols-1 gap-4">
+                            <?php foreach ($received as $i => $req):
+                                $badge = statusBadge($req['status']);
+                            ?>
+                                <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow group animate-[fadeInUp_0.4s_ease-out_both]" style="animation-delay: <?= $i * 0.05 ?>s;">
+                                    <div class="flex flex-col sm:flex-row gap-5">
+                                        <!-- Item image -->
+                                        <div class="w-full sm:w-32 h-32 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
+                                            <?php if (!empty($req['item_image'])): ?>
+                                                <img src="/uploads/items/<?= htmlspecialchars($req['item_image']) ?>" class="w-full h-full object-cover">
+                                            <?php else: ?>
+                                                <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                                    <i class="bi bi-image text-3xl"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <div class="flex-1 min-w-0 flex flex-col justify-between">
+                                            <!-- Header row -->
+                                            <div>
+                                                <div class="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-2">
+                                                    <div>
+                                                        <h4 class="text-lg font-bold text-gray-900 m-0 leading-tight">
+                                                            <?= htmlspecialchars($req['item_title']) ?>
+                                                            <span class="text-xs font-semibold text-orange-500 bg-orange-50 px-2 py-0.5 rounded-md ml-2 border border-orange-100 align-middle">
+                                                                <?= ucfirst($req['item_mode']) ?>
+                                                            </span>
+                                                        </h4>
+                                                        <div class="flex items-center gap-3 text-sm text-gray-500 mt-2 font-medium">
+                                                            <span class="flex items-center gap-1"><i class="bi bi-person-circle text-gray-400"></i> <?= htmlspecialchars($req['requester_name']) ?></span>
+                                                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                                            <span class="flex items-center gap-1"><i class="bi bi-calendar3 text-gray-400"></i> <?= date('d M Y', strtotime($req['created_at'])) ?></span>
+                                                        </div>
+                                                    </div>
+                                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border <?= $badge['bg'] ?> <?= $badge['color'] ?> <?= $badge['border'] ?>">
+                                                        <i class="bi <?= $badge['icon'] ?>"></i> <?= $badge['text'] ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <!-- APPROVED: Show buyer contact info -->
+                                            <?php if ($req['status'] === 'approved'): ?>
+                                                <div class="mt-4 bg-emerald-50 border border-emerald-100 rounded-xl p-4">
+                                                    <div class="text-sm font-bold text-emerald-800 mb-3 flex items-center gap-2">
+                                                        <i class="bi bi-check-circle-fill text-emerald-500"></i> Approved — Contact buyer to arrange handover
+                                                    </div>
+                                                    <div class="flex flex-wrap gap-3">
+                                                        <?php if (!empty($req['requester_phone'])): ?>
+                                                            <a href="tel:<?= htmlspecialchars($req['requester_phone']) ?>" class="inline-flex items-center gap-2 bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-500 hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors no-underline shadow-sm">
+                                                                <i class="bi bi-telephone-fill"></i> <?= htmlspecialchars($req['requester_phone']) ?>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                        <?php if (!empty($req['requester_email'])): ?>
+                                                            <a href="mailto:<?= htmlspecialchars($req['requester_email']) ?>" class="inline-flex items-center gap-2 bg-white border border-blue-200 text-blue-600 hover:bg-blue-500 hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors no-underline shadow-sm">
+                                                                <i class="bi bi-envelope-fill"></i> Email Buyer
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
+
+                                            <!-- Action buttons -->
+                                            <?php if ($req['status'] === 'pending'): ?>
+                                                <div class="flex flex-wrap gap-3 mt-4 pt-4 border-t border-gray-100">
+                                                    <form action="/requests/approve/<?= $req['id'] ?>" method="POST" class="m-0">
+                                                        <button type="submit" class="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm">
+                                                            <i class="bi bi-check-lg"></i> Accept Request
+                                                        </button>
+                                                    </form>
+                                                    <form action="/requests/reject/<?= $req['id'] ?>" method="POST" class="m-0">
+                                                        <button type="submit" class="flex items-center gap-2 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 px-5 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm">
+                                                            <i class="bi bi-x-lg"></i> Decline
+                                                        </button>
+                                                    </form>
+                                                </div>
+
+                                            <?php elseif ($req['status'] === 'approved'): ?>
+                                                <div class="mt-4 pt-4 border-t border-gray-100">
+                                                    <?php if ($req['item_mode'] === 'sell'): ?>
+                                                        <form action="/requests/sold/<?= $req['id'] ?>" method="POST" onsubmit="return confirm('Mark as sold after physical handover?')" class="m-0">
+                                                            <button type="submit" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm">
+                                                                <i class="bi bi-bag-check-fill"></i> Mark as Sold
+                                                            </button>
+                                                        </form>
+                                                    <?php else: ?>
+                                                        <form action="/requests/returned/<?= $req['id'] ?>" method="POST" onsubmit="return confirm('Mark item as returned?')" class="m-0">
+                                                            <button type="submit" class="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm">
+                                                                <i class="bi bi-arrow-return-left font-bold"></i> Mark as Returned
+                                                            </button>
+                                                        </form>
+                                                    <?php endif; ?>
+                                                </div>
+                                            <?php endif; ?>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+
+                <?php endif; ?>
+
+                <!-- ═══════════════ SENT TAB ═══════════════ -->
+                <?php if ($tab === 'sent'): ?>
+
+                    <?php if (empty($sent)): ?>
+                        <div class="bg-white rounded-2xl border border-dashed border-gray-200 p-12 text-center shadow-sm">
+                            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                                <i class="bi bi-send text-4xl"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">No requests sent yet</h3>
+                            <p class="text-gray-500 max-w-sm mx-auto mb-6">Browse items and send a request to get started.</p>
+                            <a href="/browse" class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-2.5 rounded-full transition-colors shadow-sm shadow-orange-500/20 no-underline">
+                                <i class="bi bi-search"></i> Browse Items
+                            </a>
+                        </div>
+                    <?php else: ?>
+                        <div class="grid grid-cols-1 gap-4">
+                            <?php foreach ($sent as $i => $req):
+                                $badge = statusBadge($req['status']);
+                            ?>
+                                <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow group animate-[fadeInUp_0.4s_ease-out_both]" style="animation-delay: <?= $i * 0.05 ?>s;">
+                                    <div class="flex flex-col sm:flex-row gap-5">
+                                        <!-- Item image -->
+                                        <div class="w-full sm:w-32 h-32 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
+                                            <?php if (!empty($req['item_image'])): ?>
+                                                <img src="/uploads/items/<?= htmlspecialchars($req['item_image']) ?>" class="w-full h-full object-cover">
+                                            <?php else: ?>
+                                                <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                                    <i class="bi bi-image text-3xl"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+
+                                        <div class="flex-1 min-w-0 flex flex-col justify-between">
+                                            <!-- Header row -->
+                                            <div>
+                                                <div class="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-2">
+                                                    <div>
+                                                        <h4 class="text-lg font-bold text-gray-900 m-0 leading-tight">
+                                                            <?= htmlspecialchars($req['item_title']) ?>
+                                                            <span class="text-sm font-extrabold text-orange-600 ml-2">
+                                                                ₹<?= number_format((float)($req['item_price'] ?? 0), 0) ?>
+                                                            </span>
+                                                        </h4>
+                                                        <div class="flex items-center gap-3 text-sm text-gray-500 mt-2 font-medium">
+                                                            <span class="flex items-center gap-1"><i class="bi bi-shop text-gray-400"></i> Seller: <span class="text-gray-700 font-semibold"><?= htmlspecialchars($req['owner_name']) ?></span></span>
+                                                            <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                                            <span class="flex items-center gap-1"><i class="bi bi-calendar3 text-gray-400"></i> <?= date('d M Y', strtotime($req['created_at'])) ?></span>
+                                                        </div>
+                                                    </div>
+                                                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border <?= $badge['bg'] ?> <?= $badge['color'] ?> <?= $badge['border'] ?>">
+                                                        <i class="bi <?= $badge['icon'] ?>"></i> <?= $badge['text'] ?>
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <!-- APPROVED: Show seller contact info -->
+                                            <?php if ($req['status'] === 'approved'): ?>
+                                                <div class="mt-4 bg-emerald-50 border border-emerald-100 rounded-xl p-4">
+                                                    <div class="text-sm font-bold text-emerald-800 mb-3 flex items-center gap-2">
+                                                        <i class="bi bi-check-circle-fill text-emerald-500"></i> Request approved! Contact the seller to arrange handover
+                                                    </div>
+                                                    <div class="flex flex-wrap gap-3">
+                                                        <?php if (!empty($req['owner_phone'])): ?>
+                                                            <a href="tel:<?= htmlspecialchars($req['owner_phone']) ?>" class="inline-flex items-center gap-2 bg-white border border-emerald-200 text-emerald-700 hover:bg-emerald-500 hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors no-underline shadow-sm">
+                                                                <i class="bi bi-telephone-fill"></i> <?= htmlspecialchars($req['owner_phone']) ?>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                        <?php if (!empty($req['owner_email'])): ?>
+                                                            <a href="mailto:<?= htmlspecialchars($req['owner_email']) ?>" class="inline-flex items-center gap-2 bg-white border border-blue-200 text-blue-600 hover:bg-blue-500 hover:text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors no-underline shadow-sm">
+                                                                <i class="bi bi-envelope-fill"></i> Email Seller
+                                                            </a>
+                                                        <?php endif; ?>
+                                                        <?php if (!empty($req['owner_city'])): ?>
+                                                            <span class="inline-flex items-center gap-1.5 bg-white border border-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm font-semibold shadow-sm">
+                                                                <i class="bi bi-geo-alt-fill text-gray-400"></i> <?= htmlspecialchars($req['owner_city']) ?>
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
+
+                                            <?php if ($req['status'] === 'rejected'): ?>
+                                                <div class="mt-4 bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-center gap-2 text-rose-700 text-sm font-medium">
+                                                    <i class="bi bi-x-circle-fill"></i>
+                                                    <span>Request was rejected. You can browse other similar items.</span>
+                                                    <a href="/browse" class="font-bold text-rose-800 hover:underline ml-1">Browse →</a>
+                                                </div>
+                                            <?php endif; ?>
+
+                                            <!-- Cancel button for pending requests -->
+                                            <?php if ($req['status'] === 'pending'): ?>
+                                                <div class="mt-4 pt-4 border-t border-gray-100">
+                                                    <form action="/requests/cancel/<?= $req['id'] ?>" method="POST" onsubmit="return confirm('Cancel this request?')" class="m-0">
+                                                        <button type="submit" class="flex items-center gap-2 bg-white border border-gray-200 text-gray-600 hover:bg-gray-100 hover:text-gray-900 px-5 py-2 rounded-lg font-semibold text-sm transition-colors shadow-sm">
+                                                            <i class="bi bi-x-lg font-bold"></i> Cancel Request
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            <?php endif; ?>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+
+                <?php endif; ?>
+
             </div>
         </div>
-    <?php else: ?>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-            <?php foreach ($sent as $req):
-                $badge = statusBadge($req['status']);
-            ?>
-                <div class="card" style="padding:16px;">
-                    <div style="display:flex;align-items:flex-start;gap:14px;">
+    </div>
+</div>
 
-                        <!-- Item image -->
-                        <div style="width:64px;height:56px;border-radius:8px;overflow:hidden;background:#f1f5f9;flex-shrink:0;">
-                            <?php if (!empty($req['item_image'])): ?>
-                                <img src="/uploads/items/<?= htmlspecialchars($req['item_image']) ?>"
-                                    style="width:100%;height:100%;object-fit:cover;">
-                            <?php else: ?>
-                                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#94a3b8;">
-                                    <i class="bi bi-image"></i>
-                                </div>
-                            <?php endif; ?>
-                        </div>
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 
-                        <div style="flex:1;min-width:0;">
-                            <!-- Header row -->
-                            <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-                                <div>
-                                    <div style="font-weight:600;font-size:0.9rem;">
-                                        <?= htmlspecialchars($req['item_title']) ?>
-                                        <span style="font-size:.75rem;font-weight:400;color:#64748b;margin-left:6px;">
-                                            ₹<?= number_format((float)($req['item_price'] ?? 0), 0) ?>
-                                        </span>
-                                    </div>
-                                    <div style="font-size:0.8rem;color:#64748b;margin-top:2px;">
-                                        Seller: <strong><?= htmlspecialchars($req['owner_name']) ?></strong>
-                                        · <?= date('d M Y', strtotime($req['created_at'])) ?>
-                                    </div>
-                                </div>
-                                <span style="background:<?= $badge['bg'] ?>;color:<?= $badge['color'] ?>;
-                                     font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;">
-                                    <?= $badge['text'] ?>
-                                </span>
-                            </div>
-
-                            <!-- APPROVED: Show seller contact info so buyer can arrange handover -->
-                            <?php if ($req['status'] === 'approved'): ?>
-                                <div style="margin-top:12px;padding:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;">
-                                    <div style="font-size:.8rem;font-weight:700;color:#15803d;margin-bottom:8px;">
-                                        ✓ Request approved! Contact the seller to arrange handover
-                                    </div>
-                                    <div style="display:flex;flex-wrap:wrap;gap:12px;">
-                                        <?php if (!empty($req['owner_phone'])): ?>
-                                            <a href="tel:<?= htmlspecialchars($req['owner_phone']) ?>"
-                                                style="display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;font-weight:600;color:#15803d;text-decoration:none;background:#dcfce7;padding:6px 12px;border-radius:6px;border:1px solid #bbf7d0;">
-                                                <i class="bi bi-telephone-fill"></i>
-                                                <?= htmlspecialchars($req['owner_phone']) ?>
-                                            </a>
-                                        <?php endif; ?>
-                                        <?php if (!empty($req['owner_email'])): ?>
-                                            <a href="mailto:<?= htmlspecialchars($req['owner_email']) ?>"
-                                                style="display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;font-weight:600;color:#1d4ed8;text-decoration:none;background:#eff6ff;padding:6px 12px;border-radius:6px;border:1px solid #bfdbfe;">
-                                                <i class="bi bi-envelope-fill"></i>
-                                                <?= htmlspecialchars($req['owner_email']) ?>
-                                            </a>
-                                        <?php endif; ?>
-                                        <?php if (!empty($req['owner_city'])): ?>
-                                            <span style="display:inline-flex;align-items:center;gap:6px;font-size:.8125rem;color:#64748b;padding:6px 12px;">
-                                                <i class="bi bi-geo-alt-fill"></i>
-                                                <?= htmlspecialchars($req['owner_city']) ?>
-                                            </span>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-
-                            <?php if ($req['status'] === 'rejected'): ?>
-                                <div style="margin-top:8px;padding:8px 12px;background:#fee2e2;border-radius:8px;font-size:.8rem;color:#991b1b;">
-                                    Request was rejected. You can browse other similar items.
-                                    <a href="/browse" style="font-weight:600;color:#991b1b;margin-left:6px;">Browse →</a>
-                                </div>
-                            <?php endif; ?>
-
-                            <!-- Cancel button for pending requests -->
-                            <?php if ($req['status'] === 'pending'): ?>
-                                <div style="margin-top:10px;">
-                                    <form action="/requests/cancel/<?= $req['id'] ?>" method="POST"
-                                        onsubmit="return confirm('Cancel this request?')">
-                                        <button type="submit"
-                                            style="background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;padding:6px 16px;border-radius:6px;font-weight:600;font-size:.875rem;cursor:pointer;">
-                                            Cancel Request
-                                        </button>
-                                    </form>
-                                </div>
-                            <?php endif; ?>
-
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-
-<?php endif; ?>
-
-<?php require __DIR__ . '/../includes/dashboard-footer.php'; ?>
+<?php require __DIR__ . '/../includes/footer.php'; ?>

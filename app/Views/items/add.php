@@ -1,7 +1,19 @@
 <?php
 $pageTitle = 'Add New Listing';
-require __DIR__ . '/../includes/dashboard-header.php';
+require __DIR__ . '/../includes/head.php';
+require __DIR__ . '/../includes/navigation.php';
 ?>
+
+<div style="background:#f8faf9;min-height:calc(100vh - 72px);padding:40px 0;">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Sidebar -->
+            <div class="col-lg-3">
+                <?php require __DIR__ . '/../includes/account-sidebar.php'; ?>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
 
 <!-- Breadcrumb -->
 <div class="breadcrumb">
@@ -12,28 +24,26 @@ require __DIR__ . '/../includes/dashboard-header.php';
     <span class="current">Add Item</span>
 </div>
 
-<div class="max-w-2xl">
+<div class="max-w-2xl" style="animation:fadeInUp .4s ease;">
     <div class="card">
         <div class="card-header">
             <div>
-                <div class="card-header-title">Add New Listing</div>
+                <div class="card-header-title">
+                    <i class="bi bi-plus-circle me-2" style="color:var(--brand-color);"></i>Add New Listing
+                </div>
                 <div class="card-header-sub">Fill in the details below and your item goes live instantly</div>
             </div>
         </div>
 
-        <!-- Errors -->
-        <?php if (!empty($errors)): ?>
-        <div style="margin:16px 24px 0;">
-            <div class="alert alert-red" style="flex-direction:column;gap:3px;">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;flex-shrink:0;align-self:flex-start;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <?php foreach ($errors as $error): ?>
-                <div><?= htmlspecialchars($error) ?></div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-        <?php endif; ?>
-
         <div class="card-body">
+            <!-- General error -->
+            <?php if (!empty($errors['_general'])): ?>
+                <div class="general-error">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <span><?= htmlspecialchars($errors['_general']) ?></span>
+                </div>
+            <?php endif; ?>
+
             <form action="/items/add" method="POST" enctype="multipart/form-data" class="space-y-5">
 
                 <!-- Title -->
@@ -42,7 +52,10 @@ require __DIR__ . '/../includes/dashboard-header.php';
                     <input id="title" name="title" type="text"
                            value="<?= htmlspecialchars($old['title'] ?? '') ?>"
                            placeholder="e.g. iPhone 12, Wooden Study Table, Guitar"
-                           class="form-control" />
+                           class="form-control <?= !empty($errors['title']) ? 'is-invalid' : '' ?>" />
+                    <?php if (!empty($errors['title'])): ?>
+                        <span class="field-error"><?= htmlspecialchars($errors['title']) ?></span>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Description -->
@@ -50,8 +63,12 @@ require __DIR__ . '/../includes/dashboard-header.php';
                     <label for="description" class="form-label">Description <span class="req">*</span></label>
                     <textarea id="description" name="description" rows="4"
                               placeholder="Describe the condition, usage, any accessories included…"
-                              class="form-control"><?= htmlspecialchars($old['description'] ?? '') ?></textarea>
-                    <span class="form-hint">Tip: Better descriptions = faster sales</span>
+                              class="form-control <?= !empty($errors['description']) ? 'is-invalid' : '' ?>"><?= htmlspecialchars($old['description'] ?? '') ?></textarea>
+                    <?php if (!empty($errors['description'])): ?>
+                        <span class="field-error"><?= htmlspecialchars($errors['description']) ?></span>
+                    <?php else: ?>
+                        <span class="form-hint"><i class="bi bi-lightbulb me-1"></i>Tip: Better descriptions = faster sales</span>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Price / City / Mode -->
@@ -63,23 +80,32 @@ require __DIR__ . '/../includes/dashboard-header.php';
                             <input id="price" name="price" type="number" min="1" step="1"
                                    value="<?= htmlspecialchars($old['price'] ?? '') ?>"
                                    placeholder="0"
-                                   class="form-control" />
+                                   class="form-control <?= !empty($errors['price']) ? 'is-invalid' : '' ?>" />
                         </div>
+                        <?php if (!empty($errors['price'])): ?>
+                            <span class="field-error"><?= htmlspecialchars($errors['price']) ?></span>
+                        <?php endif; ?>
                     </div>
                     <div class="form-group">
                         <label for="city" class="form-label">City <span class="req">*</span></label>
                         <input id="city" name="city" type="text"
                                value="<?= htmlspecialchars($old['city'] ?? '') ?>"
                                placeholder="e.g. Mumbai"
-                               class="form-control" />
+                               class="form-control <?= !empty($errors['city']) ? 'is-invalid' : '' ?>" />
+                        <?php if (!empty($errors['city'])): ?>
+                            <span class="field-error"><?= htmlspecialchars($errors['city']) ?></span>
+                        <?php endif; ?>
                     </div>
                     <div class="form-group">
                         <label for="mode" class="form-label">Listing Type <span class="req">*</span></label>
-                        <select id="mode" name="mode" class="form-control">
+                        <select id="mode" name="mode" class="form-control <?= !empty($errors['mode']) ? 'is-invalid' : '' ?>">
                             <option value="">Select type</option>
                             <option value="sell" <?= ($old['mode'] ?? '') === 'sell' ? 'selected' : '' ?>>For Sale</option>
                             <option value="rent" <?= ($old['mode'] ?? '') === 'rent' ? 'selected' : '' ?>>For Rent</option>
                         </select>
+                        <?php if (!empty($errors['mode'])): ?>
+                            <span class="field-error"><?= htmlspecialchars($errors['mode']) ?></span>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -93,12 +119,16 @@ require __DIR__ . '/../includes/dashboard-header.php';
                         <input id="image" name="image" type="file" accept="image/*"
                                class="file-input" style="margin-top:10px;" />
                     </div>
-                    <span class="form-hint">Items with photos sell 3× faster</span>
+                    <?php if (!empty($errors['image'])): ?>
+                        <span class="field-error"><?= htmlspecialchars($errors['image']) ?></span>
+                    <?php else: ?>
+                        <span class="form-hint"><i class="bi bi-camera me-1"></i>Items with photos sell 3× faster</span>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Actions -->
                 <div style="display:flex;flex-wrap:wrap;gap:12px;padding-top:10px;border-top:1px solid var(--border-light);">
-                    <button type="submit" class="btn btn-primary btn-lg" style="flex:1;min-width:140px;">
+                    <button type="submit" class="btn btn-brand btn-lg shadow-sm" style="flex:1;min-width:140px;">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                         Post Listing
                     </button>
@@ -110,4 +140,9 @@ require __DIR__ . '/../includes/dashboard-header.php';
     </div>
 </div>
 
-<?php require __DIR__ . '/../includes/dashboard-footer.php'; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php require __DIR__ . '/../includes/footer.php'; ?>

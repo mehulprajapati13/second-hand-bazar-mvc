@@ -54,13 +54,18 @@ class RegisterValidation
             $validator = new Validator($data, $rules, $messages);
 
             if (!$validator->isValid()) {
-                return array_merge(...array_values($validator->getErrors()));
+                // Return keyed errors: ['field_name' => 'First error for that field']
+                $keyed = [];
+                foreach ($validator->getErrors() as $field => $fieldErrors) {
+                    $keyed[$field] = $fieldErrors[0] ?? '';
+                }
+                return $keyed;
             }
 
             return [];
 
         } catch (ValidatorException $e) {
-            return [$e->getMessage()];
+            return ['_general' => $e->getMessage()];
         }
     }
 }

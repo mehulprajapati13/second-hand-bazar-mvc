@@ -54,7 +54,7 @@ class AuthController extends Controller
 
             if ($result['status'] === 'exists') {
                 $this->view('auth/register', [
-                    'errors' => ['This email is already registered.'],
+                    'errors' => ['email' => 'This email is already registered.'],
                     'old' => $old,
                 ]);
                 return;
@@ -77,7 +77,7 @@ class AuthController extends Controller
         } catch (Exception $e) {
             $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
             $this->view('auth/register', [
-                'errors' => ['Something went wrong. Please try again.'],
+                'errors' => ['_general' => 'Something went wrong. Please try again.'],
                 'old' => [],
             ]);
         }
@@ -109,7 +109,7 @@ class AuthController extends Controller
             if (empty($email) || empty($otp)) {
                 $this->view('auth/verify_otp', [
                     'email' => $email,
-                    'errors' => ['OTP and email are required.'],
+                    'errors' => ['otp' => 'OTP is required.'],
                     'message' => '',
                 ]);
                 return;
@@ -135,14 +135,14 @@ class AuthController extends Controller
 
             $this->view('auth/verify_otp', [
                 'email' => $email,
-                'errors' => [$error],
+                'errors' => ['_general' => $error],
                 'message' => '',
             ]);
         } catch (Exception $e) {
             $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
             $this->view('auth/verify_otp', [
                 'email' => $_POST['email'] ?? '',
-                'errors' => ['Something went wrong.'],
+                'errors' => ['_general' => 'Something went wrong.'],
                 'message' => '',
             ]);
         }
@@ -235,7 +235,7 @@ class AuthController extends Controller
                 }
 
                 $this->view('auth/login', [
-                    'errors' => [$error],
+                    'errors' => ['_general' => $error],
                     'success' => '',
                     'unverified' => $result === 'unverified',
                     'email' => $email,
@@ -262,7 +262,7 @@ class AuthController extends Controller
         } catch (Exception $e) {
             $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
             $this->view('auth/login', [
-                'errors' => ['Something went wrong.'],
+                'errors' => ['_general' => 'Something went wrong.'],
                 'success' => '',
             ]);
         }
@@ -296,7 +296,7 @@ class AuthController extends Controller
 
             if ($result === 'not_found') {
                 $this->view('auth/forgot_password', [
-                    'errors' => ['No account found with this email.'],
+                    'errors' => ['email' => 'No account found with this email.'],
                     'success' => '',
                 ]);
                 return;
@@ -304,7 +304,7 @@ class AuthController extends Controller
 
             if ($result === 'mail_failed') {
                 $this->view('auth/forgot_password', [
-                    'errors' => ['Failed to send OTP. Try again.'],
+                    'errors' => ['_general' => 'Failed to send OTP. Try again.'],
                     'success' => '',
                 ]);
                 return;
@@ -316,7 +316,7 @@ class AuthController extends Controller
         } catch (Exception $e) {
             $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
             $this->view('auth/forgot_password', [
-                'errors' => ['Something went wrong.'],
+                'errors' => ['_general' => 'Something went wrong.'],
                 'success' => '',
             ]);
         }
@@ -375,14 +375,14 @@ class AuthController extends Controller
 
             $this->view('auth/reset_password', [
                 'email' => $email,
-                'errors' => [$error],
+                'errors' => ['_general' => $error],
                 'success' => '',
             ]);
         } catch (Exception $e) {
             $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
             $this->view('auth/reset_password', [
                 'email' => $_POST['email'] ?? '',
-                'errors' => ['Something went wrong.'],
+                'errors' => ['_general' => 'Something went wrong.'],
                 'success' => '',
             ]);
         }

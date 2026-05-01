@@ -5,9 +5,6 @@
 .env.backup
 .env.production
 
-# Vendor dependencies (auto-generated)
-/vendor/
-
 # Composer lock (optional - some teams include it)
 # composer.lock
 

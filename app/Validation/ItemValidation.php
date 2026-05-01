@@ -37,20 +37,24 @@ class ItemValidation
             $validator = new Validator($data, $rules, $messages);
 
             if (!$validator->isValid()) {
-                return array_merge(...array_values($validator->getErrors()));
+                $keyed = [];
+                foreach ($validator->getErrors() as $field => $fieldErrors) {
+                    $keyed[$field] = $fieldErrors[0] ?? '';
+                }
+                return $keyed;
             }
 
             if (!is_numeric($price) || (float)$price <= 0) {
-                return ['Price must be a valid positive number.'];
+                return ['price' => 'Price must be a valid positive number.'];
             }
 
             if (!in_array($mode, ['sell', 'rent'])) {
-                return ['Mode must be sell or rent.'];
+                return ['mode' => 'Mode must be sell or rent.'];
             }
 
             return [];
         } catch (ValidatorException $e) {
-            return [$e->getMessage()];
+            return ['_general' => $e->getMessage()];
         }
     }
 }

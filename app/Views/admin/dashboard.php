@@ -1,89 +1,123 @@
 <?php require __DIR__ . '/header.php'; ?>
 
 <!-- Stats Row -->
-<div class="row g-3 mb-4">
-    <div class="col-6 col-md-3">
-        <div class="stat-card">
-            <div class="value text-primary"><?= $stats['total_users'] ?? 0 ?></div>
-            <div class="label">Total Users</div>
+<div class="stat-grid">
+    <div class="admin-card stat-card">
+        <div class="stat-icon" style="background:#eff6ff;color:#3b82f6;">
+            <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value"><?= $stats['total_users'] ?? 0 ?></div>
+            <div class="stat-label">Total Users</div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card">
-            <div class="value text-success"><?= $stats['active_items'] ?? 0 ?></div>
-            <div class="label">Active Items</div>
+    
+    <div class="admin-card stat-card">
+        <div class="stat-icon" style="background:#f0fdf4;color:#22c55e;">
+            <i class="bi bi-box-seam-fill"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value"><?= $stats['active_items'] ?? 0 ?></div>
+            <div class="stat-label">Active Items</div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card">
-            <div class="value" style="color:#f97316;"><?= $stats['total_items'] ?? 0 ?></div>
-            <div class="label">Total Items</div>
+    
+    <div class="admin-card stat-card">
+        <div class="stat-icon" style="background:#fef3c7;color:#f59e0b;">
+            <i class="bi bi-grid-fill"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value"><?= $stats['total_items'] ?? 0 ?></div>
+            <div class="stat-label">Total Items</div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="stat-card">
-            <div class="value text-secondary"><?= $stats['sold_items'] ?? 0 ?></div>
-            <div class="label">Sold Items</div>
+    
+    <div class="admin-card stat-card">
+        <div class="stat-icon" style="background:#f8fafc;color:#64748b;">
+            <i class="bi bi-bag-check-fill"></i>
+        </div>
+        <div class="stat-info">
+            <div class="stat-value"><?= $stats['sold_items'] ?? 0 ?></div>
+            <div class="stat-label">Sold Items</div>
         </div>
     </div>
 </div>
 
 <!-- Users Table -->
-<div class="d-flex align-items-center justify-content-between mb-3">
-    <h5 style="font-weight:700;margin:0;">All Users</h5>
-    <span class="badge bg-primary"><?= count($users) ?> users</span>
-</div>
+<div class="admin-card">
+    <div class="d-flex align-items-center justify-content-between p-4 border-bottom">
+        <h5 style="font-weight:700;margin:0;color:var(--admin-text);">Registered Users</h5>
+        <span class="admin-badge badge-brand"><?= count($users) ?> users</span>
+    </div>
 
-<div class="admin-table">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>City</th>
-                <th>Verified</th>
-                <th>Joined</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($users)): ?>
-            <tr><td colspan="8" class="text-center py-4 text-muted">No users found.</td></tr>
-            <?php endif; ?>
-            <?php foreach ($users as $u): ?>
-            <tr>
-                <td><?= $u['id'] ?></td>
-                <td><strong><?= htmlspecialchars($u['name']) ?></strong></td>
-                <td><?= htmlspecialchars($u['email']) ?></td>
-                <td><?= htmlspecialchars($u['phone'] ?? '—') ?></td>
-                <td><?= htmlspecialchars($u['city'] ?? '—') ?></td>
-                <td>
-                    <?php if ($u['is_verified']): ?>
-                        <span class="badge bg-success">Yes</span>
-                    <?php else: ?>
-                        <span class="badge bg-warning text-dark">No</span>
-                    <?php endif; ?>
-                </td>
-                <td style="font-size:.8rem;"><?= date('d M Y', strtotime($u['created_at'])) ?></td>
-                <td>
-                    <div style="display:flex;gap:6px;">
-                        <a href="/admin/users/edit/<?= $u['id'] ?>" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <form action="/admin/users/delete/<?= $u['id'] ?>" method="POST"
-                              onsubmit="return confirm('Delete <?= htmlspecialchars($u['name']) ?>?')">
-                            <button type="submit" class="btn btn-sm btn-danger">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Contact Info</th>
+                    <th>City</th>
+                    <th>Status</th>
+                    <th>Joined</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (empty($users)): ?>
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        No users found.
+                    </td>
+                </tr>
+                <?php endif; ?>
+                <?php foreach ($users as $u): ?>
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div style="width:36px;height:36px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-weight:700;color:#64748b;">
+                                <?= strtoupper(substr($u['name'], 0, 1)) ?>
+                            </div>
+                            <div>
+                                <div style="font-weight:600;color:var(--admin-text);"><?= htmlspecialchars($u['name']) ?></div>
+                                <div style="font-size:0.75rem;color:var(--admin-text-muted);">ID: #<?= $u['id'] ?></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div><?= htmlspecialchars($u['email']) ?></div>
+                        <div style="font-size:0.8rem;color:var(--admin-text-muted);"><?= htmlspecialchars($u['phone'] ?? 'No phone') ?></div>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-1 text-muted">
+                            <i class="bi bi-geo-alt"></i> <?= htmlspecialchars($u['city'] ?? '—') ?>
+                        </div>
+                    </td>
+                    <td>
+                        <?php if ($u['is_verified']): ?>
+                            <span class="admin-badge badge-success"><i class="bi bi-check-circle me-1"></i> Verified</span>
+                        <?php else: ?>
+                            <span class="admin-badge badge-warning"><i class="bi bi-clock me-1"></i> Pending</span>
+                        <?php endif; ?>
+                    </td>
+                    <td style="color:var(--admin-text-muted);"><?= date('d M Y', strtotime($u['created_at'])) ?></td>
+                    <td>
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="/admin/users/edit/<?= $u['id'] ?>" class="btn-icon primary" title="Edit User">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form action="/admin/users/delete/<?= $u['id'] ?>" method="POST" onsubmit="return confirm('Are you sure you want to delete <?= htmlspecialchars($u['name']) ?>? This action cannot be undone.')">
+                                <button type="submit" class="btn-icon danger" title="Delete User">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <?php require __DIR__ . '/footer.php'; ?>

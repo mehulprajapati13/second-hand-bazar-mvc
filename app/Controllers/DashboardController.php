@@ -53,7 +53,7 @@ class DashboardController extends Controller
         $errors = [];
 
         if (empty($name)) {
-            $errors[] = 'Name is required.';
+            $errors['name'] = 'Name is required.';
         }
 
         if (!empty($errors)) {

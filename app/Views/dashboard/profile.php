@@ -1,131 +1,136 @@
 <?php
 $pageTitle = 'Profile';
-require __DIR__ . '/../includes/dashboard-header.php';
+require __DIR__ . '/../includes/head.php';
+require __DIR__ . '/../includes/navigation.php';
 ?>
 
-<!-- Breadcrumb -->
-<div class="breadcrumb">
-    <a href="/dashboard">Home</a>
-    <span class="sep">/</span>
-    <span class="current">Profile</span>
-</div>
-
-<!-- Alerts -->
-<?php if (!empty($errors ?? [])): ?>
-    <div class="alert alert-red mb-4" style="flex-direction:column;gap:4px;">
-        <?php foreach ($errors as $e): ?>
-            <div>• <?= htmlspecialchars($e) ?></div>
-        <?php endforeach; ?>
-    </div>
-<?php endif; ?>
-
-<!-- Profile Header Card -->
-<div class="card mb-4">
-    <div class="profile-cover"></div>
-    <div class="profile-info">
-        <div class="profile-avatar-wrap">
-            <div class="profile-avatar"><?= strtoupper(substr($user['name'] ?? 'U', 0, 1)) ?></div>
-        </div>
-        <div style="font-size:1.125rem;font-weight:700;color:var(--text-primary);"><?= htmlspecialchars($user['name'] ?? '—') ?></div>
-        <div style="font-size:.875rem;color:var(--text-muted);margin-top:2px;"><?= htmlspecialchars($user['email'] ?? '—') ?></div>
-        <?php if (!empty($user['city'])): ?>
-            <div style="font-size:.8125rem;color:var(--text-muted);margin-top:4px;display:flex;align-items:center;gap:4px;">
-                <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                </svg>
-                <?= htmlspecialchars($user['city']) ?>
-            </div>
-        <?php endif; ?>
-    </div>
-</div>
-
-<!-- Stats Row -->
-<div class="grid-3 mb-4">
-    <?php foreach (
-        [
-            ['Active',  $summary['active_items']  ?? 0, 'var(--green-bg)',  'var(--green-border)',  'var(--green-text)',  '✅'],
-            ['Sold',    $summary['sold_items']    ?? 0, 'var(--purple-bg)', 'var(--purple-border)', 'var(--purple-text)', '🏷️'],
-            ['Total',   $summary['total_items']   ?? 0, 'var(--blue-bg)',   'var(--blue-border)',   'var(--blue-text)',   '📦'],
-        ] as [$label, $val, $bg, $bdr, $clr, $ico]
-    ): ?>
-        <div class="stat-card" style="border-color:<?= $bdr ?>;background:<?= $bg ?>;">
-            <div style="font-size:1.5rem;"><?= $ico ?></div>
-            <div class="stat-value" style="color:<?= $clr ?>;"><?= $val ?></div>
-            <div class="stat-label"><?= $label ?></div>
-        </div>
-    <?php endforeach; ?>
-</div>
-
-<!-- Edit Profile Form -->
-<div class="card mb-4">
-    <div class="card-header">
-        <div>
-            <div class="card-header-title">Edit Profile</div>
-            <div class="card-header-sub">Update your personal details below</div>
-        </div>
-    </div>
-    <div class="card-body">
-        <form action="/profile/update" method="POST" class="form-grid-2" style="gap:18px;">
-
-            <div class="form-group">
-                <label class="form-label">Full Name</label>
-                <input type="text" name="name" class="form-control"
-                    value="<?= htmlspecialchars($user['name'] ?? '') ?>" required />
+<div class="bg-gray-50/50 min-h-[calc(100vh-72px)] py-8 font-sans">
+    <div class="container mx-auto px-4 lg:px-8 max-w-7xl">
+        <div class="row g-6">
+            <!-- Sidebar -->
+            <div class="col-lg-3 transition-all duration-300">
+                <?php require __DIR__ . '/../includes/account-sidebar.php'; ?>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Email Address</label>
-                <input type="email" class="form-control"
-                    value="<?= htmlspecialchars($user['email'] ?? '') ?>" disabled />
-                <span class="form-hint">Email cannot be changed.</span>
-            </div>
+            <!-- Main Content -->
+            <div class="col-lg-9 transition-all duration-300">
+                
+                <div class="flex items-center gap-2 text-sm font-medium text-gray-500 mb-6">
+                    <a href="/dashboard" class="text-orange-500 hover:text-orange-600 no-underline">Home</a>
+                    <i class="bi bi-chevron-right text-[10px]"></i>
+                    <span class="text-gray-900">Profile Settings</span>
+                </div>
 
-            <div class="form-group">
-                <label class="form-label">Phone Number</label>
-                <input type="text" name="phone" class="form-control"
-                    value="<?= htmlspecialchars($user['phone'] ?? '') ?>" />
-            </div>
+                <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight m-0 mb-1">Profile Settings</h1>
+                        <p class="text-gray-500 font-medium m-0">Update your personal details and public profile.</p>
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label class="form-label">City</label>
-                <input type="text" name="city" class="form-control"
-                    value="<?= htmlspecialchars($user['city'] ?? '') ?>" />
-            </div>
+                <!-- Profile Header Card -->
+                <div class="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm mb-8 animate-[fadeInUp_0.4s_ease-out]">
+                    <div class="h-32 bg-gradient-to-br from-orange-300 to-orange-500 relative">
+                        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuMSkiIHN0cm9rZS13aWR0aD0iMSI+PHBhdGggZD0iTTAgMjRoMjRWMHoiLz48L3N2Zz4=')] opacity-30"></div>
+                    </div>
+                    <div class="relative px-8 pb-8 -mt-12">
+                        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-4xl font-extrabold text-orange-500 shadow-xl border-4 border-white mb-4">
+                            <?= strtoupper(substr($user['name'] ?? 'U', 0, 1)) ?>
+                        </div>
+                        <h3 class="text-2xl font-extrabold text-gray-900 mb-1"><?= htmlspecialchars($user['name'] ?? '—') ?></h3>
+                        <p class="text-gray-500 font-medium mb-3"><?= htmlspecialchars($user['email'] ?? '—') ?></p>
+                        <?php if (!empty($user['city'])): ?>
+                            <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 font-bold px-3 py-1.5 rounded-lg text-sm border border-emerald-100">
+                                <i class="bi bi-geo-alt-fill"></i> <?= htmlspecialchars($user['city']) ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                </div>
 
-            <div class="col-span-2" style="padding-top:6px;">
-                <button type="submit" class="btn btn-primary">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Save Changes
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+                <!-- Edit Profile Form -->
+                <div class="bg-white border border-gray-100 rounded-2xl shadow-sm mb-8 animate-[fadeInUp_0.4s_ease-out_0.1s] overflow-hidden">
+                    <div class="bg-gray-50/50 border-b border-gray-100 p-6 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center shadow-sm">
+                            <i class="bi bi-person-lines-fill text-xl"></i>
+                        </div>
+                        <h4 class="font-extrabold text-gray-900 text-lg m-0">Personal Information</h4>
+                    </div>
+                    <div class="p-6 md:p-8">
+                        <?php if (!empty($errors['_general'])): ?>
+                            <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl mb-6 flex items-start gap-3">
+                                <i class="bi bi-exclamation-triangle-fill mt-0.5"></i>
+                                <div><?= htmlspecialchars($errors['_general']) ?></div>
+                            </div>
+                        <?php endif; ?>
 
-<!-- Security -->
-<div class="card">
-    <div class="card-header">
-        <div class="card-header-title" style="display:flex;align-items:center;gap:8px;">
-            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            Password &amp; Security
-        </div>
-    </div>
-    <div class="card-body">
-        <p class="text-sm text-secondary" style="margin-bottom:14px;">To change your password, use the forgot password flow from the login page.</p>
-        <div class="flex gap-3 flex-wrap items-center">
-            <a href="/logout" class="btn btn-secondary" style="color:var(--red-text);border-color:var(--red-border);">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Logout First
-            </a>
-            <span class="form-hint">Then use "Forgot Password" on login page</span>
+                        <form action="/profile/update" method="POST">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Full Name</label>
+                                    <input type="text" name="name" class="w-full px-4 py-3 rounded-xl border <?= !empty($errors['name']) ? 'border-rose-300 bg-rose-50' : 'border-gray-200 bg-gray-50' ?> focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors shadow-sm outline-none" value="<?= htmlspecialchars($user['name'] ?? '') ?>" required />
+                                    <?php if (!empty($errors['name'])): ?>
+                                        <p class="text-rose-500 text-xs font-semibold mt-1.5"><?= htmlspecialchars($errors['name']) ?></p>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                                    <input type="email" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-100 text-gray-500 cursor-not-allowed shadow-sm outline-none" value="<?= htmlspecialchars($user['email'] ?? '') ?>" disabled />
+                                    <p class="text-gray-400 text-xs font-medium mt-1.5 flex items-center gap-1"><i class="bi bi-lock-fill"></i> Email cannot be changed.</p>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
+                                    <input type="tel" name="phone" class="w-full px-4 py-3 rounded-xl border <?= !empty($errors['phone']) ? 'border-rose-300 bg-rose-50' : 'border-gray-200 bg-gray-50' ?> focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors shadow-sm outline-none" value="<?= htmlspecialchars($user['phone'] ?? '') ?>" />
+                                    <?php if (!empty($errors['phone'])): ?>
+                                        <p class="text-rose-500 text-xs font-semibold mt-1.5"><?= htmlspecialchars($errors['phone']) ?></p>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">City</label>
+                                    <input type="text" name="city" class="w-full px-4 py-3 rounded-xl border <?= !empty($errors['city']) ? 'border-rose-300 bg-rose-50' : 'border-gray-200 bg-gray-50' ?> focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors shadow-sm outline-none" value="<?= htmlspecialchars($user['city'] ?? '') ?>" />
+                                    <?php if (!empty($errors['city'])): ?>
+                                        <p class="text-rose-500 text-xs font-semibold mt-1.5"><?= htmlspecialchars($errors['city']) ?></p>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div class="col-span-1 md:col-span-2 mt-4 pt-6 border-t border-gray-100">
+                                    <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3 rounded-xl transition-all shadow-sm shadow-orange-500/20 hover:-translate-y-0.5 border-none cursor-pointer">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="bg-white border border-gray-100 rounded-2xl shadow-sm animate-[fadeInUp_0.4s_ease-out_0.2s] overflow-hidden mb-8">
+                    <div class="bg-gray-50/50 border-b border-gray-100 p-6 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center shadow-sm">
+                            <i class="bi bi-shield-lock-fill text-xl"></i>
+                        </div>
+                        <h4 class="font-extrabold text-gray-900 text-lg m-0">Password & Security</h4>
+                    </div>
+                    <div class="p-6 md:p-8">
+                        <p class="text-gray-500 font-medium mb-6 max-w-2xl">To update your password, you need to sign out and use the "Forgot Password" link on the login page. This ensures your account remains secure.</p>
+                        <a href="/logout" class="inline-flex items-center gap-2 bg-white border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-bold px-6 py-3 rounded-xl transition-colors no-underline">
+                            <i class="bi bi-box-arrow-right"></i> Sign Out to Reset Password
+                        </a>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
 
-<?php require __DIR__ . '/../includes/dashboard-footer.php'; ?>
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<?php require __DIR__ . '/../includes/footer.php'; ?>

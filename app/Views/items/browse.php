@@ -1,112 +1,168 @@
 <?php
 $pageTitle = 'Browse Items';
-require __DIR__ . '/../includes/dashboard-header.php';
+require __DIR__ . '/../includes/head.php';
+require __DIR__ . '/../includes/navigation.php';
 ?>
 
-<!-- Breadcrumb -->
-<div class="breadcrumb">
-    <a href="/dashboard">Home</a>
-    <span class="sep">/</span>
-    <span class="current">Browse Items</span>
-</div>
+<div class="bg-gray-50/50 min-h-[calc(100vh-72px)] py-8 font-sans">
+    <div class="container mx-auto px-4 lg:px-8 max-w-7xl">
+        
+        <?php if (isset($_SESSION['user'])): ?>
+        <div class="mb-6">
+            <a href="/dashboard" class="inline-flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-orange-600 transition-colors no-underline bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm hover:shadow-md">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+        <?php endif; ?>
 
-<!-- Filter Card -->
-<div class="card mb-4">
-    <div class="card-body">
-        <div style="margin-bottom:14px;">
-            <h1 style="font-size:1.125rem;font-weight:700;color:var(--text-primary);">Browse Listings</h1>
-            <p class="text-xs text-muted mt-1">Find quality second-hand products from verified local sellers</p>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight m-0 mb-1">Explore Marketplace</h1>
+                <p class="text-gray-500 font-medium m-0">Discover thousands of verified second-hand items</p>
+            </div>
+            <div class="text-sm font-medium text-gray-500 bg-white border border-gray-200 px-4 py-2 rounded-xl shadow-sm">
+                <span class="font-extrabold text-orange-500 text-lg"><?= count($items) ?></span> listings found
+            </div>
         </div>
 
-        <form method="GET" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;">
-            <!-- Search -->
-            <div style="flex:1;min-width:160px;">
-                <label class="form-label" style="margin-bottom:5px;display:block;">Search</label>
-                <div class="search-bar" style="max-width:none;border-radius:var(--radius-md);">
-                    <input type="text" name="search"
-                           value="<?= htmlspecialchars($filters['search'] ?? '') ?>"
-                           placeholder="Phone, chair, books…" />
-                    <button type="submit" aria-label="Search">
-                        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </button>
+        <div class="row g-6">
+            <!-- Left Sidebar (Filters) -->
+            <div class="col-lg-3">
+                <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm sticky top-24">
+                    <h6 class="font-extrabold text-gray-900 text-lg mb-6 flex items-center gap-2">
+                        <i class="bi bi-funnel-fill text-orange-500"></i> Filters
+                    </h6>
+                    
+                    <form method="GET" action="/browse">
+                        
+                        <div class="mb-5">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Keywords</label>
+                            <div class="relative">
+                                <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" name="search" class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors shadow-sm text-sm outline-none" placeholder="e.g. iPhone, Sofa" value="<?= htmlspecialchars($filters['search'] ?? '') ?>" />
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Location</label>
+                            <div class="relative">
+                                <i class="bi bi-geo-alt absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" name="city" class="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-colors shadow-sm text-sm outline-none" placeholder="City name" value="<?= htmlspecialchars($filters['city'] ?? '') ?>" />
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label class="block text-sm font-bold text-gray-700 mb-3">Listing Type</label>
+                            <div class="flex flex-col gap-3">
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <div class="relative flex items-center justify-center w-5 h-5">
+                                        <input type="radio" name="mode" value="" class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-orange-500 checked:bg-orange-50 transition-colors cursor-pointer" <?= empty($filters['mode']) ? 'checked' : '' ?>>
+                                        <div class="absolute w-2.5 h-2.5 bg-orange-500 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">All Items</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <div class="relative flex items-center justify-center w-5 h-5">
+                                        <input type="radio" name="mode" value="sell" class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-orange-500 checked:bg-orange-50 transition-colors cursor-pointer" <?= ($filters['mode'] ?? '') === 'sell' ? 'checked' : '' ?>>
+                                        <div class="absolute w-2.5 h-2.5 bg-orange-500 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">For Sale</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <div class="relative flex items-center justify-center w-5 h-5">
+                                        <input type="radio" name="mode" value="rent" class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-orange-500 checked:bg-orange-50 transition-colors cursor-pointer" <?= ($filters['mode'] ?? '') === 'rent' ? 'checked' : '' ?>>
+                                        <div class="absolute w-2.5 h-2.5 bg-orange-500 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+                                    </div>
+                                    <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">For Rent</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-3 pt-2">
+                            <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold px-4 py-3 rounded-xl transition-all shadow-sm shadow-orange-500/20 hover:-translate-y-0.5 border-none cursor-pointer">
+                                Apply Filters
+                            </button>
+                            <?php if (!empty($filters['search']) || !empty($filters['city']) || !empty($filters['mode'])): ?>
+                                <a href="/browse" class="w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-4 py-3 rounded-xl transition-colors no-underline">
+                                    Clear All
+                                </a>
+                            <?php endif; ?>
+                        </div>
+                    </form>
                 </div>
             </div>
 
-            <!-- City -->
-            <div style="min-width:130px;">
-                <label class="form-label" style="margin-bottom:5px;display:block;">City</label>
-                <input type="text" name="city"
-                       value="<?= htmlspecialchars($filters['city'] ?? '') ?>"
-                       placeholder="Any city"
-                       class="form-control" style="width:100%;" />
+            <!-- Right Content (Product Grid) -->
+            <div class="col-lg-9">
+                <?php if (empty($items)): ?>
+                    <div class="bg-white rounded-2xl border border-dashed border-gray-200 p-12 text-center shadow-sm">
+                        <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                            <i class="bi bi-search text-4xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">No results found</h3>
+                        <p class="text-gray-500 max-w-sm mx-auto mb-6">We couldn't find any items matching your filters.</p>
+                        <a href="/browse" class="inline-flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold px-6 py-2.5 rounded-xl transition-colors shadow-sm no-underline">
+                            Clear Filters
+                        </a>
+                    </div>
+                <?php else: ?>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                        <?php foreach ($items as $i => $listing): ?>
+                        <a href="/items/view/<?= $listing['id'] ?>" class="group no-underline block h-full animate-[fadeInUp_0.4s_ease-out_both]" style="animation-delay: <?= $i * 0.05 ?>s;">
+                            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-orange-500/10 hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full">
+                                
+                                <!-- Image Box -->
+                                <div class="relative pt-[75%] bg-gray-100 overflow-hidden">
+                                    <?php if (!empty($listing['image'])): ?>
+                                        <img src="/uploads/items/<?= htmlspecialchars(getRealImage($listing['image'])) ?>" 
+                                             alt="<?= htmlspecialchars($listing['title']) ?>" 
+                                             loading="lazy" 
+                                             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                    <?php else: ?>
+                                        <div class="absolute inset-0 flex items-center justify-center text-gray-300">
+                                            <i class="bi bi-image text-4xl"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <!-- Mode Badge -->
+                                    <?php if (!empty($listing['mode'])): ?>
+                                        <div class="absolute top-3 left-3">
+                                            <span class="<?= $listing['mode'] === 'rent' ? 'bg-blue-500/90 text-white' : 'bg-emerald-500/90 text-white' ?> backdrop-blur text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-sm">
+                                                <?= ucfirst($listing['mode']) ?>
+                                            </span>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+
+                                <!-- Content -->
+                                <div class="p-5 flex flex-col flex-grow">
+                                    <h6 class="font-bold text-gray-900 text-base mb-1 truncate"><?= htmlspecialchars($listing['title']) ?></h6>
+                                    <div class="font-extrabold text-xl text-orange-500 mb-4">₹<?= number_format((float)$listing['price'], 0) ?></div>
+                                    
+                                    <div class="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between text-gray-500 text-xs font-semibold">
+                                        <span class="flex items-center gap-1.5 truncate">
+                                            <i class="bi bi-geo-alt-fill text-gray-400"></i><?= htmlspecialchars($listing['city']) ?>
+                                        </span>
+                                        <span class="shrink-0 text-gray-400"><?= date('d M Y', strtotime($listing['created_at'])) ?></span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
             </div>
 
-            <!-- Type -->
-            <div style="min-width:120px;">
-                <label class="form-label" style="margin-bottom:5px;display:block;">Type</label>
-                <select name="mode" class="form-control" style="width:100%;">
-                    <option value="">All Types</option>
-                    <option value="sell" <?= ($filters['mode'] ?? '') === 'sell' ? 'selected' : '' ?>>For Sale</option>
-                    <option value="rent" <?= ($filters['mode'] ?? '') === 'rent' ? 'selected' : '' ?>>For Rent</option>
-                </select>
-            </div>
-
-            <!-- Actions -->
-            <div style="display:flex;gap:8px;">
-                <button type="submit" class="btn btn-primary">Apply</button>
-                <a href="/browse" class="btn btn-secondary">Clear</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<!-- Results -->
-<?php if (empty($items)): ?>
-<div class="card">
-    <div class="empty-state">
-        <div class="icon">🔍</div>
-        <div class="title">No items found</div>
-        <div class="desc">Try adjusting your filters or search keywords</div>
-        <a href="/browse" class="btn btn-ghost mt-4 text-brand">Clear all filters →</a>
-    </div>
-</div>
-<?php else: ?>
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-    <span class="text-sm text-muted"><?= count($items) ?> listing<?= count($items) !== 1 ? 's' : '' ?> found</span>
-</div>
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;">
-    <?php foreach ($items as $listing): ?>
-    <article class="item-card">
-        <div class="item-img" style="height:160px;">
-            <?php if (!empty($listing['image'])): ?>
-                <img src="/uploads/items/<?= htmlspecialchars($listing['image']) ?>"
-                     alt="<?= htmlspecialchars($listing['title']) ?>" loading="lazy" />
-            <?php else: ?>
-                <div class="no-img">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    <span>No Image</span>
-                </div>
-            <?php endif; ?>
-            <?php if (!empty($listing['mode'])): ?>
-            <span class="item-mode-badge badge <?= $listing['mode'] === 'rent' ? 'badge-blue' : 'badge-green' ?>">
-                <?= ucfirst($listing['mode']) ?>
-            </span>
-            <?php endif; ?>
-        </div>
-        <div class="item-body">
-            <div class="item-title"><?= htmlspecialchars($listing['title']) ?></div>
-            <div class="item-price">₹<?= number_format((float)$listing['price'], 0) ?></div>
-            <div class="item-city">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <?= htmlspecialchars($listing['city']) ?>
-            </div>
-            <div class="item-actions">
-                <a href="/items/view/<?= $listing['id'] ?>" class="btn btn-primary btn-sm btn-block">View Details</a>
-            </div>
-        </div>
-    </article>
-    <?php endforeach; ?>
-</div>
-<?php endif; ?>
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
 
-<?php require __DIR__ . '/../includes/dashboard-footer.php'; ?>
+<?php require __DIR__ . '/../includes/footer.php'; ?>

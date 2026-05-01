@@ -1,110 +1,135 @@
 <?php
 $pageTitle = 'My Listings';
-require __DIR__ . '/../includes/dashboard-header.php';
+require __DIR__ . '/../includes/head.php';
+require __DIR__ . '/../includes/navigation.php';
 ?>
 
-<!-- Breadcrumb -->
-<div class="breadcrumb">
-    <a href="/dashboard">Home</a>
-    <span class="sep">/</span>
-    <span class="current">My Listings</span>
-</div>
+<div class="bg-gray-50/50 min-h-[calc(100vh-72px)] py-8 font-sans">
+    <div class="container mx-auto px-4 lg:px-8 max-w-7xl">
+        <div class="row g-6">
+            <!-- Sidebar -->
+            <div class="col-lg-3 transition-all duration-300">
+                <?php require __DIR__ . '/../includes/account-sidebar.php'; ?>
+            </div>
 
-<!-- Page Header -->
-<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;">
-    <div>
-        <h1 style="font-size:1.25rem;font-weight:700;color:var(--text-primary);">My Listings</h1>
-        <p class="text-sm text-muted mt-1">Manage, edit, or remove your posted items</p>
-    </div>
-    <a href="/items/add" class="btn btn-primary">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-        Add New Item
-    </a>
-</div>
+            <!-- Main Content -->
+            <div class="col-lg-9 transition-all duration-300">
 
-<!-- Alerts -->
-<?php if (isset($_GET['error']) && $_GET['error'] === 'cannot_edit'): ?>
-<div class="alert alert-yellow mb-4">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-    <span><?= htmlspecialchars($message) ?></span>
-</div>
-<?php endif; ?>
-
-<?php if (isset($_GET['error']) && $_GET['error'] === 'cannot_edit'): ?>
-<div class="alert alert-yellow mb-4">
-    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-    <span>This item cannot be edited because it has pending or approved requests.</span>
-</div>
-<?php endif; ?>
-
-<!-- Items Grid -->
-<?php if (empty($items)): ?>
-<div class="card">
-    <div class="empty-state">
-        <div class="icon">📦</div>
-        <div class="title">No listings yet</div>
-        <div class="desc">Start selling by adding your first item</div>
-        <a href="/items/add" class="btn btn-primary mt-4">+ Add First Listing</a>
-    </div>
-</div>
-<?php else: ?>
-<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">
-    <?php foreach ($items as $item):
-        $statusBadge = [
-            'active'   => 'badge-green',
-            'sold'     => 'badge-gray',
-            'reserved' => 'badge-yellow',
-        ][strtolower($item['status'] ?? '')] ?? 'badge-gray';
-    ?>
-    <article class="item-card">
-        <!-- Image -->
-        <div class="item-img" style="height:160px;">
-            <?php if (!empty($item['image'])): ?>
-                <img src="/uploads/items/<?= htmlspecialchars($item['image']) ?>"
-                     alt="<?= htmlspecialchars($item['title']) ?>" loading="lazy" />
-            <?php else: ?>
-                <div class="no-img">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    <span>No Image</span>
+                <!-- Page Header -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                    <div>
+                        <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight m-0 mb-1">My Listings</h1>
+                        <p class="text-sm text-gray-500 font-medium m-0">Manage, edit, or remove your posted items</p>
+                    </div>
+                    <a href="/items/add" class="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-5 py-2.5 rounded-xl transition-all shadow-sm shadow-orange-500/20 hover:-translate-y-0.5 no-underline shrink-0">
+                        <i class="bi bi-plus-lg"></i> Add New Item
+                    </a>
                 </div>
-            <?php endif; ?>
-            <span class="item-status-badge badge <?= $statusBadge ?>"><?= ucfirst($item['status'] ?? 'active') ?></span>
-        </div>
 
-        <!-- Info -->
-        <div class="item-body">
-            <div class="item-title"><?= htmlspecialchars($item['title']) ?></div>
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-                <div class="item-price">₹<?= number_format((float)$item['price'], 0) ?></div>
-                <span class="badge badge-gray" style="font-size:.625rem;"><?= ucfirst($item['mode'] ?? '') ?></span>
-            </div>
-            <div class="item-city">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <?= htmlspecialchars($item['city']) ?>
-            </div>
+                <!-- Alerts -->
+                <?php if (!empty($message)): ?>
+                <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-xl mb-6 flex items-center gap-3 shadow-sm font-semibold text-sm">
+                    <i class="bi bi-check-circle-fill text-lg"></i>
+                    <span><?= htmlspecialchars($message) ?></span>
+                </div>
+                <?php endif; ?>
 
-            <!-- Action buttons -->
-            <div style="margin-top:auto;padding-top:8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">
-                <a href="/items/view/<?= $item['id'] ?>" class="btn btn-primary btn-sm" style="justify-content:center;">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                    View
-                </a>
-                <a href="/items/edit/<?= $item['id'] ?>" class="btn btn-secondary btn-sm" style="justify-content:center;">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                    Edit
-                </a>
-                <form action="/items/delete/<?= $item['id'] ?>" method="POST"
-                      onsubmit="return confirm('Are you sure you want to delete this item?');">
-                    <button type="submit" class="btn btn-danger btn-sm btn-block" style="justify-content:center;">
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                        Del
-                    </button>
-                </form>
+                <?php if (isset($_GET['error']) && $_GET['error'] === 'cannot_edit'): ?>
+                <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl mb-6 flex items-center gap-3 shadow-sm font-semibold text-sm">
+                    <i class="bi bi-exclamation-triangle-fill text-lg"></i>
+                    <span>This item cannot be edited because it has pending or approved requests.</span>
+                </div>
+                <?php endif; ?>
+
+                <!-- Items Grid -->
+                <?php if (empty($items)): ?>
+                <div class="bg-white rounded-2xl border border-dashed border-gray-200 p-12 text-center shadow-sm">
+                    <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                        <i class="bi bi-box-seam text-4xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">No listings yet</h3>
+                    <p class="text-gray-500 max-w-sm mx-auto mb-6">Start selling by adding your first item to the marketplace.</p>
+                    <a href="/items/add" class="inline-flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold px-6 py-2.5 rounded-xl transition-colors shadow-sm no-underline">
+                        <i class="bi bi-plus-lg"></i> Add First Listing
+                    </a>
+                </div>
+                <?php else: ?>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <?php foreach ($items as $i => $item):
+                        $statusColors = [
+                            'active'   => 'bg-emerald-500',
+                            'sold'     => 'bg-gray-500',
+                            'reserved' => 'bg-amber-500',
+                        ];
+                        $badgeColor = $statusColors[strtolower($item['status'] ?? '')] ?? 'bg-gray-500';
+                    ?>
+                    <article class="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full animate-[fadeInUp_0.4s_ease-out_both]" style="animation-delay: <?= $i * 0.05 ?>s;">
+                        
+                        <!-- Image Box -->
+                        <div class="relative pt-[75%] bg-gray-100 overflow-hidden group">
+                            <?php if (!empty($item['image'])): ?>
+                                <img src="/uploads/items/<?= htmlspecialchars(getRealImage($item['image'])) ?>"
+                                     alt="<?= htmlspecialchars($item['title']) ?>" loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <?php else: ?>
+                                <div class="absolute inset-0 flex items-center justify-center text-gray-300">
+                                    <i class="bi bi-image text-4xl"></i>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <!-- Badges -->
+                            <div class="absolute top-3 left-3 flex flex-col gap-2">
+                                <span class="<?= $badgeColor ?>/90 backdrop-blur text-white text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-sm">
+                                    <?= ucfirst($item['status'] ?? 'active') ?>
+                                </span>
+                            </div>
+                            <?php if (!empty($item['mode'])): ?>
+                                <div class="absolute top-3 right-3">
+                                    <span class="bg-white/90 text-gray-700 backdrop-blur text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-sm">
+                                        <?= ucfirst($item['mode']) ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="p-5 flex flex-col flex-grow">
+                            <h6 class="font-bold text-gray-900 text-base mb-1 truncate"><?= htmlspecialchars($item['title']) ?></h6>
+                            <div class="font-extrabold text-xl text-orange-500 mb-4">₹<?= number_format((float)$item['price'], 0) ?></div>
+                            
+                            <div class="flex items-center text-gray-500 text-xs font-semibold mb-4">
+                                <i class="bi bi-geo-alt-fill text-gray-400 mr-1.5"></i><?= htmlspecialchars($item['city']) ?>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between gap-2">
+                                <a href="/items/view/<?= $item['id'] ?>" class="flex-1 text-center bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs font-bold py-2 rounded-lg transition-colors no-underline">
+                                    <i class="bi bi-eye mr-1"></i> View
+                                </a>
+                                <a href="/items/edit/<?= $item['id'] ?>" class="flex-1 text-center bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-bold py-2 rounded-lg transition-colors no-underline">
+                                    <i class="bi bi-pencil mr-1"></i> Edit
+                                </a>
+                                <form action="/items/delete/<?= $item['id'] ?>" method="POST" onsubmit="return confirm('Are you sure you want to delete this item?');" class="flex-1 m-0">
+                                    <button type="submit" class="w-full text-center bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold py-2 rounded-lg transition-colors border-none cursor-pointer">
+                                        <i class="bi bi-trash mr-1"></i> Del
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </article>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+
             </div>
         </div>
-    </article>
-    <?php endforeach; ?>
+    </div>
 </div>
-<?php endif; ?>
 
-<?php require __DIR__ . '/../includes/dashboard-footer.php'; ?>
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<?php require __DIR__ . '/../includes/footer.php'; ?>

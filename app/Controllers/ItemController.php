@@ -51,7 +51,7 @@ class ItemController extends Controller
 
             if ($uploadResult['error']) {
                 $this->view('items/add', [
-                    'errors' => [$uploadResult['error']],
+                    'errors' => ['image' => $uploadResult['error']],
                     'old' => $old,
                 ]);
                 return;
@@ -69,7 +69,7 @@ class ItemController extends Controller
         }
 
         $this->view('items/add', [
-            'errors' => ['Failed to save item. Please try again.'],
+            'errors' => ['_general' => 'Failed to save item. Please try again.'],
             'old' => $old,
         ]);
     }
@@ -197,7 +197,7 @@ class ItemController extends Controller
             if ($uploadResult['error']) {
                 $this->view('items/edit', [
                     'item' => $item,
-                    'errors' => [$uploadResult['error']],
+                    'errors' => ['image' => $uploadResult['error']],
                 ]);
                 return;
             }
@@ -215,7 +215,7 @@ class ItemController extends Controller
 
         $this->view('items/edit', [
             'item'   => $item,
-            'errors' => ['Failed to update. Please try again.'],
+            'errors' => ['_general' => 'Failed to update. Please try again.'],
         ]);
     }
 
