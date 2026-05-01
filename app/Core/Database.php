@@ -7,8 +7,7 @@ class Database
 {
     public function getConnection()
     {
-        $config = require __DIR__ .'/../../config/Database.php';
-
+        $config = require __DIR__ . '/../../config/database.php';
         $conn = new mysqli(
             $config['host'],
             $config['user'],
