@@ -46,7 +46,7 @@ $image       = $item['image']             ?? null;
         <div style="padding:18px 24px 0;">
             <div style="font-size:.6875rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);margin-bottom:8px;">Current Image</div>
             <div style="position:relative;width:128px;height:96px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);">
-                <img src="/uploads/items/<?= htmlspecialchars((string)$image) ?>"
+                <img src="/uploads/items/<?= htmlspecialchars((string)getRealImage($image)) ?>"
                      alt="Current" style="width:100%;height:100%;object-fit:cover;" />
                 <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.45);text-align:center;padding:4px;font-size:.625rem;color:#fff;font-weight:600;">Current</div>
             </div>

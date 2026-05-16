@@ -49,9 +49,6 @@ require __DIR__ . '/../includes/navigation.php';
                 ?>
                 <div class="flex items-center justify-between mb-4">
                     <h4 class="text-lg font-extrabold text-gray-900 m-0 tracking-tight">Overview</h4>
-                    <button class="text-xs font-bold text-orange-500 hover:text-orange-600 flex items-center gap-1 bg-orange-50 px-3 py-1.5 rounded-lg transition-colors border-0">
-                        <i class="bi bi-download"></i> Export
-                    </button>
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
@@ -201,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
         new Chart(performanceCtx, {
             type: 'bar',
             data: {
-                labels: ['Active', 'Sold', 'Reserved', 'Archived'],
+                labels: ['Active', 'Sold', 'Reserved'],
                 datasets: [{
                     label: 'Listings',
                     data: [<?= $summary['active_items'] ?? 5 ?>, <?= $summary['sold_items'] ?? 2 ?>, <?= $summary['reserved_items'] ?? 1 ?>, 0],

@@ -104,23 +104,6 @@ require __DIR__ . '/../includes/navigation.php';
                         </form>
                     </div>
                 </div>
-
-                <!-- Security -->
-                <div class="bg-white border border-gray-100 rounded-2xl shadow-sm animate-[fadeInUp_0.4s_ease-out_0.2s] overflow-hidden mb-8">
-                    <div class="bg-gray-50/50 border-b border-gray-100 p-6 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center shadow-sm">
-                            <i class="bi bi-shield-lock-fill text-xl"></i>
-                        </div>
-                        <h4 class="font-extrabold text-gray-900 text-lg m-0">Password & Security</h4>
-                    </div>
-                    <div class="p-6 md:p-8">
-                        <p class="text-gray-500 font-medium mb-6 max-w-2xl">To update your password, you need to sign out and use the "Forgot Password" link on the login page. This ensures your account remains secure.</p>
-                        <a href="/logout" class="inline-flex items-center gap-2 bg-white border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-bold px-6 py-3 rounded-xl transition-colors no-underline">
-                            <i class="bi bi-box-arrow-right"></i> Sign Out to Reset Password
-                        </a>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>

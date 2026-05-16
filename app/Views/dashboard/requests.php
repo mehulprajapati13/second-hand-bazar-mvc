@@ -3,6 +3,11 @@ $pageTitle = 'Requests';
 require __DIR__ . '/../includes/head.php';
 require __DIR__ . '/../includes/navigation.php';
 
+// Initialize variables with defaults
+$tab = $tab ?? 'received';
+$received = $received ?? [];
+$sent = $sent ?? [];
+
 // Status badge helper
 function statusBadge(string $status): array
 {
@@ -76,7 +81,7 @@ function statusBadge(string $status): array
                                         <!-- Item image -->
                                         <div class="w-full sm:w-32 h-32 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
                                             <?php if (!empty($req['item_image'])): ?>
-                                                <img src="/uploads/items/<?= htmlspecialchars($req['item_image']) ?>" class="w-full h-full object-cover">
+                                                <img src="/uploads/items/<?= htmlspecialchars((string)getRealImage($req['item_image'])) ?>" class="w-full h-full object-cover">
                                             <?php else: ?>
                                                 <div class="w-full h-full flex items-center justify-center text-gray-300">
                                                     <i class="bi bi-image text-3xl"></i>
@@ -194,7 +199,7 @@ function statusBadge(string $status): array
                                         <!-- Item image -->
                                         <div class="w-full sm:w-32 h-32 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-100">
                                             <?php if (!empty($req['item_image'])): ?>
-                                                <img src="/uploads/items/<?= htmlspecialchars($req['item_image']) ?>" class="w-full h-full object-cover">
+                                                <img src="/uploads/items/<?= htmlspecialchars((string)getRealImage($req['item_image'])) ?>" class="w-full h-full object-cover">
                                             <?php else: ?>
                                                 <div class="w-full h-full flex items-center justify-center text-gray-300">
                                                     <i class="bi bi-image text-3xl"></i>

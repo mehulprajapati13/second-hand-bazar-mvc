@@ -23,15 +23,9 @@ $isActive = $status === 'active';
     <div class="container mx-auto px-4 lg:px-8 max-w-7xl">
         <!-- Breadcrumb -->
         <nav class="flex text-sm text-gray-500 font-medium mb-6" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3 list-none">
                 <li class="inline-flex items-center">
-                    <a href="/" class="hover:text-orange-500 transition-colors no-underline text-gray-500 flex items-center"><i class="bi bi-house-door mr-2"></i>Home</a>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <i class="bi bi-chevron-right text-gray-400 text-xs mx-1"></i>
-                        <a href="/browse" class="hover:text-orange-500 transition-colors no-underline text-gray-500 ml-1 md:ml-2">Marketplace</a>
-                    </div>
+                    <a href="/browse" class="hover:text-orange-500 transition-colors no-underline text-gray-500">Marketplace</a>
                 </li>
                 <li aria-current="page">
                     <div class="flex items-center">
@@ -145,7 +139,7 @@ $isActive = $status === 'active';
                             <?php if ($isOwner): ?>
                                 <div class="bg-orange-50 border border-orange-100 p-4 rounded-2xl text-center">
                                     <p class="font-bold text-orange-800 mb-3 text-sm">This is your listing</p>
-                                    <a href="/items/edit/<?= $itemId ?>" class="flex items-center justify-center gap-2 bg-white text-orange-600 border border-orange-200 hover:bg-orange-600 hover:text-white font-bold py-3 px-4 rounded-xl transition-colors no-underline">
+                                    <a href="/items/edit/<?= $itemId ?>" class="flex items-center justify-center gap-2 bg-white text-orange-600 border border-orange-200 hover:bg-orange-50 font-bold py-3 px-4 rounded-xl transition-colors no-underline">
                                         <i class="bi bi-pencil"></i> Edit Details
                                     </a>
                                 </div>

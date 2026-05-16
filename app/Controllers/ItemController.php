@@ -10,17 +10,26 @@ use Vendor\App\Services\RequestService;
 class ItemController extends Controller
 {
     private ItemService $itemService;
+    private const ADD_ITEM_FORM_FLASH = 'add_item_form_flash';
 
     public function __construct(ItemService $itemService)
     {
         $this->itemService = $itemService;
     }
 
+    private function pullFormFlash(string $key): array
+    {
+        $flash = $_SESSION[$key] ?? [];
+        unset($_SESSION[$key]);
+        return is_array($flash) ? $flash : [];
+    }
+
     public function showAdd(): void
     {
+        $flash = $this->pullFormFlash(self::ADD_ITEM_FORM_FLASH);
         $this->view('items/add', [
-            'errors' => [],
-            'old' => [],
+            'errors' => $flash['errors'] ?? [],
+            'old' => $flash['old'] ?? [],
         ]);
     }
 
@@ -39,8 +48,9 @@ class ItemController extends Controller
         $errors = $validator->validate($title, $description, $price, $mode, $city);
 
         if (!empty($errors)) {
-            $this->view('items/add', ['errors' => $errors, 'old' => $old]);
-            return;
+            $_SESSION[self::ADD_ITEM_FORM_FLASH] = ['errors' => $errors, 'old' => $old];
+            header("Location: /items/add");
+            exit;
         }
 
         $image = null;
@@ -50,11 +60,12 @@ class ItemController extends Controller
             $uploadResult = $this->handleImageUpload($_FILES['image']);
 
             if ($uploadResult['error']) {
-                $this->view('items/add', [
+                $_SESSION[self::ADD_ITEM_FORM_FLASH] = [
                     'errors' => ['image' => $uploadResult['error']],
                     'old' => $old,
-                ]);
-                return;
+                ];
+                header("Location: /items/add");
+                exit;
             }
 
             $image = $uploadResult['filename'];
@@ -68,10 +79,12 @@ class ItemController extends Controller
             exit;
         }
 
-        $this->view('items/add', [
+        $_SESSION[self::ADD_ITEM_FORM_FLASH] = [
             'errors' => ['_general' => 'Failed to save item. Please try again.'],
             'old' => $old,
-        ]);
+        ];
+        header("Location: /items/add");
+        exit;
     }
 
     public function myItems(): void

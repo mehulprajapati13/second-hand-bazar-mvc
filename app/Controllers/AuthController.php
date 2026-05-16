@@ -12,10 +12,20 @@ use Exception;
 class AuthController extends Controller
 {
     private AuthService $authService;
+    private const REGISTER_FORM_FLASH = 'register_form_flash';
+    private const LOGIN_FORM_FLASH = 'login_form_flash';
+    private const FORGOT_FORM_FLASH = 'forgot_form_flash';
 
     public function __construct(AuthService $authService)
     {
         $this->authService = $authService;
+    }
+
+    private function pullFormFlash(string $key): array
+    {
+        $flash = $_SESSION[$key] ?? [];
+        unset($_SESSION[$key]);
+        return is_array($flash) ? $flash : [];
     }
 
     public function showLanding(): void
@@ -25,7 +35,11 @@ class AuthController extends Controller
 
     public function showRegister()
     {
-        $this->view('auth/register', ['errors' => [], 'old' => []]);
+        $flash = $this->pullFormFlash(self::REGISTER_FORM_FLASH);
+        $this->view('auth/register', [
+            'errors' => $flash['errors'] ?? [],
+            'old' => $flash['old'] ?? [],
+        ]);
     }
 
     public function register(): void
@@ -43,21 +57,23 @@ class AuthController extends Controller
             $errors = $validator->validate($name, $email, $phone, $city, $password);
 
             if (!empty($errors)) {
-                $this->view('auth/register', [
+                $_SESSION[self::REGISTER_FORM_FLASH] = [
                     'errors' => $errors,
                     'old' => $old,
-                ]);
-                return;
+                ];
+                header("Location: /register");
+                exit;
             }
 
             $result = $this->authService->register($name, $email, $phone, $city, $password);
 
             if ($result['status'] === 'exists') {
-                $this->view('auth/register', [
+                $_SESSION[self::REGISTER_FORM_FLASH] = [
                     'errors' => ['email' => 'This email is already registered.'],
                     'old' => $old,
-                ]);
-                return;
+                ];
+                header("Location: /register");
+                exit;
             }
 
             $_SESSION['otp_email'] = $result['email'];
@@ -76,10 +92,12 @@ class AuthController extends Controller
             exit;
         } catch (Exception $e) {
             $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
-            $this->view('auth/register', [
+            $_SESSION[self::REGISTER_FORM_FLASH] = [
                 'errors' => ['_general' => 'Something went wrong. Please try again.'],
                 'old' => [],
-            ]);
+            ];
+            header("Location: /register");
+            exit;
         }
     }
 
@@ -185,6 +203,7 @@ class AuthController extends Controller
 
     public function showLogin(): void
     {
+        $flash = $this->pullFormFlash(self::LOGIN_FORM_FLASH);
         $msg = $_GET['msg'] ?? '';
         $success = '';
 
@@ -197,8 +216,10 @@ class AuthController extends Controller
         }
 
         $this->view('auth/login', [
-            'errors' => [],
+            'errors' => $flash['errors'] ?? [],
             'success' => $success,
+            'unverified' => !empty($flash['unverified']),
+            'email' => $flash['email'] ?? '',
         ]);
     }
 
@@ -212,11 +233,12 @@ class AuthController extends Controller
             $errors = $validator->validate($email, $password);
 
             if (!empty($errors)) {
-                $this->view('auth/login', [
+                $_SESSION[self::LOGIN_FORM_FLASH] = [
                     'errors' => $errors,
-                    'success' => '',
-                ]);
-                return;
+                    'email' => $email,
+                ];
+                header("Location: /login");
+                exit;
             }
 
             $result = $this->authService->login($email, $password);
@@ -234,13 +256,13 @@ class AuthController extends Controller
                     $_SESSION['otp_email'] = $email;
                 }
 
-                $this->view('auth/login', [
+                $_SESSION[self::LOGIN_FORM_FLASH] = [
                     'errors' => ['_general' => $error],
-                    'success' => '',
                     'unverified' => $result === 'unverified',
                     'email' => $email,
-                ]);
-                return;
+                ];
+                header("Location: /login");
+                exit;
             }
 
             $_SESSION['user'] = [
@@ -261,18 +283,22 @@ class AuthController extends Controller
             exit;
         } catch (Exception $e) {
             $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
-            $this->view('auth/login', [
+            $_SESSION[self::LOGIN_FORM_FLASH] = [
                 'errors' => ['_general' => 'Something went wrong.'],
-                'success' => '',
-            ]);
+                'email' => trim($_POST['email'] ?? ''),
+            ];
+            header("Location: /login");
+            exit;
         }
     }
 
     public function showForgotPassword(): void
     {
+        $flash = $this->pullFormFlash(self::FORGOT_FORM_FLASH);
         $this->view('auth/forgot_password', [
-            'errors' => [],
-            'success' => '',
+            'errors' => $flash['errors'] ?? [],
+            'success' => $flash['success'] ?? '',
+            'email' => $flash['email'] ?? '',
         ]);
     }
 
@@ -285,29 +311,35 @@ class AuthController extends Controller
             $errors = $validator->validateEmail($email);
 
             if (!empty($errors)) {
-                $this->view('auth/forgot_password', [
+                $_SESSION[self::FORGOT_FORM_FLASH] = [
                     'errors' => $errors,
                     'success' => '',
-                ]);
-                return;
+                    'email' => $email,
+                ];
+                header("Location: /forgot-password");
+                exit;
             }
 
             $result = $this->authService->sendForgotOtp($email);
 
             if ($result === 'not_found') {
-                $this->view('auth/forgot_password', [
+                $_SESSION[self::FORGOT_FORM_FLASH] = [
                     'errors' => ['email' => 'No account found with this email.'],
                     'success' => '',
-                ]);
-                return;
+                    'email' => $email,
+                ];
+                header("Location: /forgot-password");
+                exit;
             }
 
             if ($result === 'mail_failed') {
-                $this->view('auth/forgot_password', [
+                $_SESSION[self::FORGOT_FORM_FLASH] = [
                     'errors' => ['_general' => 'Failed to send OTP. Try again.'],
                     'success' => '',
-                ]);
-                return;
+                    'email' => $email,
+                ];
+                header("Location: /forgot-password");
+                exit;
             }
 
             $_SESSION['reset_email'] = $email;
@@ -315,10 +347,13 @@ class AuthController extends Controller
             exit;
         } catch (Exception $e) {
             $this->log($e->getMessage(), ['file' => $e->getFile(), 'line' => $e->getLine(),]);
-            $this->view('auth/forgot_password', [
+            $_SESSION[self::FORGOT_FORM_FLASH] = [
                 'errors' => ['_general' => 'Something went wrong.'],
                 'success' => '',
-            ]);
+                'email' => trim($_POST['email'] ?? ''),
+            ];
+            header("Location: /forgot-password");
+            exit;
         }
     }
 

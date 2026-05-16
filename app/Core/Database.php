@@ -12,8 +12,7 @@ class Database
             $config['host'],
             $config['user'],
             $config['pass'],
-            $config['dbname'],
-            $config['port'],
+            $config['dbname']
         );
 
         if($conn->connect_error) {

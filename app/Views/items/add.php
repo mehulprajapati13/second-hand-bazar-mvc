@@ -4,25 +4,24 @@ require __DIR__ . '/../includes/head.php';
 require __DIR__ . '/../includes/navigation.php';
 ?>
 
-<div style="background:#f8faf9;min-height:calc(100vh - 72px);padding:40px 0;">
-    <div class="container">
-        <div class="row g-4">
+<div class="bg-gray-50/50 min-h-[calc(100vh-72px)] py-8 font-sans">
+    <div class="container mx-auto px-4 lg:px-8 max-w-7xl">
+        <div class="row g-6">
             <!-- Sidebar -->
-            <div class="col-lg-3">
+            <div class="col-lg-3 transition-all duration-300">
                 <?php require __DIR__ . '/../includes/account-sidebar.php'; ?>
             </div>
 
             <!-- Main Content -->
-            <div class="col-lg-9">
+            <div class="col-lg-9 transition-all duration-300">
 
-<!-- Breadcrumb -->
-<div class="breadcrumb">
-    <a href="/dashboard">Home</a>
-    <span class="sep">/</span>
-    <a href="/items">My Listings</a>
-    <span class="sep">/</span>
-    <span class="current">Add Item</span>
-</div>
+                <!-- Page Header -->
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                    <div>
+                        <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight m-0 mb-1">Add New Listing</h1>
+                        <p class="text-sm text-gray-500 font-medium m-0">Fill in the details below and your item goes live instantly</p>
+                    </div>
+                </div>
 
 <div class="max-w-2xl" style="animation:fadeInUp .4s ease;">
     <div class="card">

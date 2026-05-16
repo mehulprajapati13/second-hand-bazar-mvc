@@ -24,8 +24,8 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
                 <span class="sidebar-text text-sm whitespace-nowrap">Overview</span>
             </a>
             
-            <a href="/items" class="group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 <?= str_starts_with($currentPath, '/items') && !str_starts_with($currentPath, '/items/add') ? 'bg-orange-50 text-orange-600 font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-50 hover:text-orange-500' ?> no-underline" title="My Listings">
-                <i class="bi bi-box-seam text-xl <?= str_starts_with($currentPath, '/items') && !str_starts_with($currentPath, '/items/add') ? 'text-orange-500' : 'text-gray-400 group-hover:text-orange-500' ?>"></i>
+            <a href="/items" class="group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 <?= str_starts_with($currentPath, '/items') ? 'bg-orange-50 text-orange-600 font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-50 hover:text-orange-500' ?> no-underline" title="My Listings">
+                <i class="bi bi-box-seam text-xl <?= str_starts_with($currentPath, '/items') ? 'text-orange-500' : 'text-gray-400 group-hover:text-orange-500' ?>"></i>
                 <span class="sidebar-text text-sm whitespace-nowrap">My Listings</span>
             </a>
             

@@ -1761,17 +1761,27 @@ body {
     flex-shrink: 0;
 }
 .field-error {
-    display: block;
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 6px;
     color: var(--red-text);
     font-size: 0.8rem;
     font-weight: 500;
+    line-height: 1.35;
     margin-top: 6px;
     animation: fadeIn 0.3s ease;
 }
 .field-error::before {
     content: "\F33B"; /* bi-exclamation-circle */
     font-family: bootstrap-icons !important;
-    margin-right: 5px;
+    display: inline-flex;
+    width: auto;
+    height: auto;
+    line-height: 1;
+    background: none;
+    margin-right: 0;
+    margin-top: 1px;
+    flex-shrink: 0;
 }
 .form-control.is-invalid {
     border-color: var(--red-border) !important;
